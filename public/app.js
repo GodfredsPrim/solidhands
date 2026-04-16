@@ -115,7 +115,35 @@ class BackgroundManager {
     }
 }
 
-// Initialize Slideshow when DOM is ready
+// Initialize Sidebar/Slideshow when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new BackgroundManager();
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const menuClose = document.getElementById('menuClose');
+    const mobileNav = document.getElementById('mobileNav');
+
+    if (menuToggle && mobileNav) {
+        menuToggle.addEventListener('click', () => {
+            mobileNav.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        });
+    }
+
+    if (menuClose && mobileNav) {
+        menuClose.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scroll
+        });
+    }
+
+    // Close menu on link click
+    const mobileLinks = document.querySelectorAll('.mobile-links a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
 });

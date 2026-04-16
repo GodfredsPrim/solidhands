@@ -17,8 +17,26 @@
             <li><a href="/careers.html">Careers</a></li>
             <li><a href="/contractors.html">Contractors</a></li>
         </ul>
-        <button id="logoutBtn" style="display: none; background: none; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Logout</button>
+        <div class="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
+            <button id="logoutBtn" style="display: none; background: none; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Logout</button>
+            <button class="mobile-menu-toggle" id="menuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
     </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <img src="../logo.png" alt="Logo">
+            <button id="menuClose"><i data-lucide="x"></i></button>
+        </div>
+        <ul class="mobile-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/careers.html">Careers</a></li>
+            <li><a href="/contractors.html">Contractors</a></li>
+        </ul>
+    </div>
 
     <!-- Login Screen -->
     <div id="loginScreen" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 5%;">
