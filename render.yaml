@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: solidhands
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    disk:
+      name: uploads-data
+      mountPath: /uploads
+      sizeGB: 1

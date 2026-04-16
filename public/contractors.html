@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractors | SolidHands GEE Engineering Ltd</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="logo-container">
+            <a href="/"><img src="logo.png" alt="SolidHands Logo"></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#services">Services</a></li>
+            <li><a href="careers.html">Careers</a></li>
+            <li><a href="contractors.html" class="active">Contractors</a></li>
+        </ul>
+    </nav>
+
+    <header class="portal-header">
+        <span class="section-tag">Partner With Us</span>
+        <h1>Contractor Application</h1>
+        <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">Apply for project contracts and industrial partnerships with SolidHands.</p>
+    </header>
+
+    <div class="portal-container">
+        <div class="glass-card">
+            <h2 style="margin-bottom: 2rem;">Company Details</h2>
+            <form id="contractorForm">
+                <div class="form-group">
+                    <label>Company/Entity Name</label>
+                    <input type="text" name="companyName" placeholder="Global Logistics Ltd" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Business Email</label>
+                        <input type="email" name="email" placeholder="contact@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" name="phone" placeholder="+233 ..." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Primary Specialty</label>
+                    <select name="specialty" style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;">
+                        <option>Civil Construction</option>
+                        <option>Heavy Equipment Supply</option>
+                        <option>Structural Welding</option>
+                        <option>Industrial Logistics</option>
+                        <option>Electrical Infrastructure</option>
+                        <option>Environmental HSE</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Years of Experience / Portfolio Summary</label>
+                    <textarea name="experience" rows="4" placeholder="Tell us about your previous major projects..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.1rem; margin-top: 1rem;">
+                    Submit Partner Application
+                </button>
+            </form>
+
+            <div id="successBox" style="display: none; margin-top: 2rem; padding: 2rem; background: rgba(0, 255, 100, 0.05); border: 1px solid var(--success); border-radius: var(--radius); text-align: center;">
+                <i data-lucide="shield-check" style="color: var(--success); width: 48px; height: 48px; margin-bottom: 1rem;"></i>
+                <h3>Application Received</h3>
+                <p style="color: var(--text-muted); margin-top: 1rem;">Your company profile has been submitted for review. Our procurement team will contact you shortly.</p>
+                <a href="/" class="btn btn-secondary" style="margin-top: 2rem;">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <footer style="margin-top: 4rem;">
+        <p class="copyright">&copy; 2026 SolidHands GEE Engineering Ltd.</p>
+    </footer>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <i data-lucide="moon" id="themeIcon"></i>
+    </button>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            themeIcon.setAttribute('data-lucide', isLight ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+
+        const form = document.getElementById('contractorForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = Object.fromEntries(new FormData(form));
+            
+            const btn = form.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = "Submitting...";
+
+            try {
+                const response = await fetch('/api/contractors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    form.style.display = 'none';
+                    document.getElementById('successBox').style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Submission failed. Please try again.');
+                btn.disabled = false;
+                btn.textContent = "Submit Partner Application";
+            }
+        });
+    </script>
+    <style>
+        select option { background: var(--bg-dark); }
+        .active { color: var(--primary) !important; }
+    </style>
+</body>
+</html>

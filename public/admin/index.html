@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | SolidHands GEE Engineering Ltd</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body style="background: var(--bg-main);">
+    <nav id="navbar">
+        <div class="logo-container">
+            <a href="/"><img src="../logo.png" alt="SolidHands Logo"></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/careers.html">Careers</a></li>
+            <li><a href="/contractors.html">Contractors</a></li>
+        </ul>
+        <button id="logoutBtn" style="display: none; background: none; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Logout</button>
+    </nav>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 5%;">
+        <div class="glass-card" style="width: 100%; max-width: 400px; text-align: center;">
+            <div style="width: 60px; height: 60px; background: rgba(255,115,0,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--primary);">
+                <i data-lucide="lock" style="width: 30px; height: 30px;"></i>
+            </div>
+            <h2 style="margin-bottom: 2rem;">Admin Access</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Master Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required style="text-align: center; letter-spacing: 4px;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Authenticate</button>
+            </form>
+            <p id="loginError" style="color: var(--error); margin-top: 1rem; display: none; font-size: 0.85rem;">Incorrect master password.</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <main id="dashboard" style="display: none; padding: var(--spacing-xl) 5%;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
+            <div>
+                <span class="section-tag">Management Console</span>
+                <h1>Overview</h1>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="tab-btn active" data-tab="candidates">Candidates</button>
+                <button class="tab-btn" data-tab="contractors">Contractors</button>
+                <button class="tab-btn" data-tab="jobs">Job Listings</button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            <div class="glass-card" style="padding: 1.5rem;">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Total Applications</p>
+                <h2 id="statApplications" style="font-size: 2.5rem; margin: 0.5rem 0;">0</h2>
+                <div style="color: var(--success); font-size: 0.8rem;">+12% this week</div>
+            </div>
+            <div class="glass-card" style="padding: 1.5rem;">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Partner Contractors</p>
+                <h2 id="statContractors" style="font-size: 2.5rem; margin: 0.5rem 0;">0</h2>
+                <div style="color: var(--primary); font-size: 0.8rem;">Active bids</div>
+            </div>
+            <div class="glass-card" style="padding: 1.5rem;">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">High-Match Rate</p>
+                <h2 id="statMatches" style="font-size: 2.5rem; margin: 0.5rem 0;">0%</h2>
+                <div style="color: var(--success); font-size: 0.8rem;">Ready for interview</div>
+            </div>
+        </div>
+
+        <!-- Candidates Tab -->
+        <section id="tabCandidates" class="tab-content">
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: rgba(255,255,255,0.03);">
+                        <tr>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Name</th>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Role</th>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Match Score</th>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">CV</th>
+                        </tr>
+                    </thead>
+                    <tbody id="candidatesList">
+                        <!-- Data rows here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Contractors Tab -->
+        <section id="tabContractors" class="tab-content" style="display: none;">
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: rgba(255,255,255,0.03);">
+                        <tr>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Company</th>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Specialty</th>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Contact</th>
+                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contractorsList">
+                        <!-- Data rows here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Jobs Section -->
+        <section id="tabJobs" class="tab-content" style="display: none;">
+            <div class="glass-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+                <h3 style="margin-bottom: 1rem;">Add New Job Vacancy</h3>
+                <form id="addJobForm" style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 2;">
+                        <label>Job Title</label>
+                        <input type="text" id="jobTitle" placeholder="e.g. Civil Engineer" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                        <label>Category</label>
+                        <select id="jobCategory">
+                            <option>Engineering</option>
+                            <option>Construction</option>
+                            <option>Logistics</option>
+                            <option>Technical</option>
+                            <option>HSE</option>
+                            <option>Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.9rem 1.5rem;">Add Vacancy</button>
+                </form>
+            </div>
+            <div class="glass-card">
+                <h3>Current Vacancies</h3>
+                <div class="table-container">
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 1px solid var(--border);">
+                                <th style="padding: 1rem;">ID</th>
+                                <th style="padding: 1rem;">Title</th>
+                                <th style="padding: 1rem;">Category</th>
+                                <th style="padding: 1rem; text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsList">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <i data-lucide="moon" id="themeIcon"></i>
+    </button>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            themeIcon.setAttribute('data-lucide', isLight ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+
+        const loginForm = document.getElementById('loginForm');
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboard = document.getElementById('dashboard');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check Session
+        if (localStorage.getItem('adminToken')) {
+            showDashboard();
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            const response = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (response.ok) {
+                localStorage.setItem('adminToken', 'active');
+                showDashboard();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            location.reload();
+        });
+
+        async function showDashboard() {
+            loginScreen.style.display = 'none';
+            dashboard.style.display = 'block';
+            logoutBtn.style.display = 'block';
+            loadData();
+        }
+
+        async function loadData() {
+            const res = await fetch('/api/admin/data');
+            const data = await res.json();
+
+            // Stats
+            document.getElementById('statApplications').textContent = data.applications.length;
+            document.getElementById('statContractors').textContent = data.contractors.length;
+            const avgMatch = data.applications.length > 0 
+                ? Math.round(data.applications.reduce((acc, curr) => acc + curr.matchScore, 0) / data.applications.length)
+                : 0;
+            document.getElementById('statMatches').textContent = avgMatch + '%';
+
+            // Candidates
+            const candList = document.getElementById('candidatesList');
+            candList.innerHTML = data.applications.length > 0 
+                ? data.applications.map(app => `
+                    <tr>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${app.fullName}</td>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${app.role}</td>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <span class="${app.matchScore > 70 ? 'match-high' : 'match-med'}">${app.matchScore}%</span>
+                        </td>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <a href="${app.cvUrl}" target="_blank" style="color: var(--primary);"><i data-lucide="file-text"></i> View CV</a>
+                        </td>
+                    </tr>
+                `).join('')
+                : `<tr><td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No applications yet.</td></tr>`;
+
+            // Contractors
+            const contList = document.getElementById('contractorsList');
+            contList.innerHTML = data.contractors.length > 0
+                ? data.contractors.map(c => `
+                    <tr>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${c.companyName}</td>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${c.specialty}</td>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${c.email}</td>
+                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <span class="role-tag">Pending Review</span>
+                        </td>
+                    </tr>
+                `).join('')
+                : `<tr><td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No contractors yet.</td></tr>`;
+
+            // Jobs
+            const jobsList = document.getElementById('jobsList');
+            jobsList.innerHTML = data.jobs.map(job => `
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem;">${job.id}</td>
+                    <td style="padding: 1rem;">${job.title}</td>
+                    <td style="padding: 1rem;">${job.category}</td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <button onclick="deleteJob(${job.id})" style="background: none; border: none; color: var(--error); cursor: pointer;" title="Delete">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        async function deleteJob(id) {
+            if (!confirm('Are you sure you want to delete this job vacancy?')) return;
+            
+            try {
+                const res = await fetch(`/api/admin/jobs/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (result.success) loadData();
+            } catch (err) {
+                alert('Failed to delete job');
+            }
+        }
+
+        const addJobForm = document.getElementById('addJobForm');
+        addJobForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('jobTitle').value;
+            const category = document.getElementById('jobCategory').value;
+
+            try {
+                const res = await fetch('/api/admin/jobs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, category })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    addJobForm.reset();
+                    loadData();
+                }
+            } catch (err) {
+                alert('Failed to add job');
+            }
+        });
+
+        // Tab Switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                
+                btn.classList.add('active');
+                const tabId = 'tab' + btn.dataset.tab.charAt(0).toUpperCase() + btn.dataset.tab.slice(1);
+                document.getElementById(tabId).style.display = 'block';
+            });
+        });
+    </script>
+
+    <style>
+        .tab-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition-base);
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        table th { font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        .active-link { color: var(--primary) !important; }
+    </style>
+</body>
+</html>
