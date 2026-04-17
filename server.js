@@ -29,9 +29,16 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Master Password
 const ADMIN_PASSWORD = 'solidhands2026';
 
+// Ensure uploads directory exists
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    console.log('[System] Created uploads directory');
+}
+
 // Multi-part form setup (Multer)
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
+    destination: (req, file, cb) => cb(null, UPLOADS_DIR),
     filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 const upload = multer({ storage });
@@ -53,14 +60,17 @@ const db = {
     ]
 };
 
+// Database path
+const DB_PATH = path.join(__dirname, 'db.json');
+
 // Persistence Logic (Save to db.json on every change)
 const saveDb = () => {
-    fs.writeFileSync('db.json', JSON.stringify(db, null, 2));
+    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
 };
 
 // Load initial DB if exists
-if (fs.existsSync('db.json')) {
-    Object.assign(db, JSON.parse(fs.readFileSync('db.json')));
+if (fs.existsSync(DB_PATH)) {
+    Object.assign(db, JSON.parse(fs.readFileSync(DB_PATH)));
 }
 
 // Routes
@@ -78,6 +88,7 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
         console.log(`[Data] Applicant: ${fullName}, Role: ${role}, Email: ${email}`);
         const cvPath = req.file ? req.file.path : null;
         const mimeType = req.file ? req.file.mimetype : null;
+        console.log(`[Storage] CV stored at: ${cvPath}`);
 
         if (!cvPath) return res.status(400).json({ error: "CV file is required" });
 
@@ -107,8 +118,11 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
         // Return success with match results
         res.json({ success: true, matchResult });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to process application" });
+        console.error("[Application Error]", error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message || "Failed to process application. Please ensure your CV is a valid PDF or Word document." 
+        });
     }
 });
 

@@ -26,19 +26,28 @@ class MatchingEngine {
      * Extracts text from a CV file (PDF or DOCX)
      */
     async extractText(filePath, mimeType) {
-        if (!fs.existsSync(filePath)) throw new Error("File not found");
+        if (!fs.existsSync(filePath)) throw new Error(`File not found at: ${filePath}. Current CWD: ${process.cwd()}`);
 
         const dataBuffer = fs.readFileSync(filePath);
 
-        if (mimeType === 'application/pdf') {
-            const data = await pdf(dataBuffer);
-            return data.text;
-        } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            const data = await mammoth.extractRawText({ buffer: dataBuffer });
-            return data.value;
-        } else {
-            // Fallback for plain text or unknown
-            return dataBuffer.toString();
+        try {
+            if (mimeType === 'application/pdf') {
+                const data = await pdf(dataBuffer);
+                return data.text || "";
+            } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || filePath.endsWith('.docx')) {
+                const data = await mammoth.extractRawText({ buffer: dataBuffer });
+                return data.value || "";
+            } else if (mimeType === 'application/msword' || filePath.endsWith('.doc')) {
+                // Legacy .doc support is limited without external binaries, so we treat as raw text
+                // which often extracts usable strings from the binary soup for matching
+                return dataBuffer.toString('utf-8').replace(/[^\x20-\x7E\t\n\r]/g, ' ');
+            } else {
+                // Fallback for plain text
+                return dataBuffer.toString();
+            }
+        } catch (err) {
+            console.error(`Extraction error for ${mimeType}:`, err);
+            throw new Error(`Failed to read ${mimeType} file content. Ensure it is a valid document.`);
         }
     }
 

@@ -75,9 +75,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Upload CV (PDF or DOCX)</label>
+                    <label>Upload CV (PDF or Word)</label>
                     <div style="position: relative; border: 2px dashed rgba(255, 255, 255, 0.1); padding: 2rem; text-align: center; border-radius: var(--radius); cursor: pointer;" id="dropzone">
-                        <input type="file" id="cv" name="cv" accept=".pdf,.docx" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" required>
+                        <input type="file" id="cv" name="cv" accept=".pdf,.docx,.doc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" required>
                         <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 1rem;"></i>
                         <p id="fileName">Select or drag CV file</p>
                     </div>
@@ -167,20 +167,26 @@
                     method: 'POST',
                     body: formData
                 });
-                const result = await response.json();
-
-                if (result.success) {
-                    // Phase 2: AI Matching Animation
-                    aiStatus.textContent = "AI Scanning CV & Matching...";
-                    setTimeout(() => {
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        // Phase 2: AI Matching Animation
+                        aiStatus.textContent = "AI Scanning CV & Matching...";
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                            document.getElementById('resultBox').style.display = 'block';
+                            document.getElementById('matchSummary').textContent = result.matchResult.summary;
+                            document.getElementById('scoreCircle').textContent = result.matchResult.score + '%';
+                            form.style.display = 'none';
+                        }, 2000);
+                    } else {
+                        alert('Upload failed: ' + result.error);
                         overlay.style.display = 'none';
-                        document.getElementById('resultBox').style.display = 'block';
-                        document.getElementById('matchSummary').textContent = result.matchResult.summary;
-                        document.getElementById('scoreCircle').textContent = result.matchResult.score + '%';
-                        form.style.display = 'none';
-                    }, 2000);
+                    }
                 } else {
-                    alert('Upload failed: ' + result.error);
+                    const errorData = await response.json().catch(() => ({}));
+                    alert('Server Error: ' + (errorData.error || 'The file could not be processed. Please ensure it is a valid PDF or Word document.'));
                     overlay.style.display = 'none';
                 }
             } catch (err) {
