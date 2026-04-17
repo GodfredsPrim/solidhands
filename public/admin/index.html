@@ -253,7 +253,9 @@
             const avgMatch = data.applications.length > 0 
                 ? Math.round(data.applications.reduce((acc, curr) => acc + curr.matchScore, 0) / data.applications.length)
                 : 0;
-            document.getElementById('statMatches').textContent = avg            // Candidates
+            document.getElementById('statMatches').textContent = avgMatch + '%';
+
+            // Candidates
             const candList = document.getElementById('candidatesList');
             const candCards = document.getElementById('candidatesCardsList');
             
@@ -322,7 +324,6 @@
                 contList.innerHTML = `<tr><td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No contractors yet.</td></tr>`;
                 contCards.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No contractors yet.</p>`;
             }
-t.</td></tr>`;
 
             // Jobs
             const jobsList = document.getElementById('jobsList');
