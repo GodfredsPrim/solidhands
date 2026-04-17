@@ -66,10 +66,11 @@
                         <input type="tel" id="phone" name="phone" placeholder="+233 ..." required>
                     </div>
                     <div class="form-group">
-                        <label>Target Role</label>
-                        <select id="role" name="role" style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;">
+                        <label>Area of Expertise</label>
+                        <input type="text" id="role" name="role" list="roleList" placeholder="e.g. HME Mechanic" style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;" required>
+                        <datalist id="roleList">
                             <!-- Will be populated by JS -->
-                        </select>
+                        </datalist>
                     </div>
                 </div>
 
@@ -110,7 +111,7 @@
     </div>
 
     <footer style="margin-top: 4rem;">
-        <p class="copyright">&copy; 2026 SolidHands GEE Engineering Ltd.</p>
+        <p class="copyright">&copy; 2026 SolidHands GEE Engineering Ltd. | <a href="mailto:erskinegodswillekow@gmail.com" style="color: var(--primary);">erskinegodswillekow@gmail.com</a></p>
     </footer>
 
     <!-- Theme Toggle -->
@@ -135,12 +136,11 @@
         fetch('/api/jobs')
             .then(res => res.json())
             .then(jobs => {
-                const select = document.getElementById('role');
+                const datalist = document.getElementById('roleList');
                 jobs.forEach(job => {
                     const opt = document.createElement('option');
                     opt.value = job.title;
-                    opt.textContent = job.title;
-                    select.appendChild(opt);
+                    datalist.appendChild(opt);
                 });
             });
 

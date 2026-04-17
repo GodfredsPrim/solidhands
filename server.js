@@ -2,6 +2,10 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const matchingEngine = require('./matching-engine');
+
+// Company Configuration
+const COMPANY_EMAIL = 'erskinegodswillekow@gmail.com';
 // Email Notification Setup
 // To enable real emails, uncomment and fill in your SMTP details below:
 /*
@@ -37,16 +41,15 @@ const db = {
     applications: [],
     contractors: [],
     jobs: [
-        { id: 1, title: "Civil Engineer", category: "Engineering" },
-        { id: 2, title: "Structural Engineer", category: "Engineering" },
-        { id: 3, title: "Mechanical Engineer", category: "Engineering" },
-        { id: 4, title: "Electrical Engineer", category: "Engineering" },
-        { id: 5, title: "Project Manager", category: "Construction" },
-        { id: 6, title: "Site Supervisor", category: "Construction" },
-        { id: 7, title: "Heavy Equipment Operator", category: "Logistics" },
-        { id: 8, title: "Welding Inspector", category: "Technical" },
-        { id: 9, title: "Health & Safety Officer", category: "HSE" },
-        { id: 10, title: "Land Surveyor", category: "Technical" }
+        { id: 1, title: "LV mechanic", category: "Technical" },
+        { id: 2, title: "HME mechanic", category: "Technical" },
+        { id: 3, title: "auto electrician LV", category: "Technical" },
+        { id: 4, title: "HME electrician", category: "Technical" },
+        { id: 5, title: "housing electrician", category: "Technical" },
+        { id: 6, title: "welder", category: "Technical" },
+        { id: 7, title: "fabrication technician", category: "Technical" },
+        { id: 8, title: "surveyor", category: "Technical" },
+        { id: 9, title: "HME Operator", category: "Technical" }
     ]
 };
 
@@ -69,8 +72,10 @@ app.get('/api/jobs', (req, res) => {
 
 // Submit Application (Job Seeker)
 app.post('/api/apply', upload.single('cv'), async (req, res) => {
+    console.log(`[Incoming] Application request received at ${new Date().toISOString()}`);
     try {
         const { fullName, email, phone, role } = req.body;
+        console.log(`[Data] Applicant: ${fullName}, Role: ${role}, Email: ${email}`);
         const cvPath = req.file ? req.file.path : null;
         const mimeType = req.file ? req.file.mimetype : null;
 
@@ -97,7 +102,7 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
         saveDb();
 
         // Send Notification (Simulated)
-        console.log(`[Notification] New application from ${fullName} for ${role}. Match Score: ${matchResult.score}%`);
+        console.log(`[Notification to ${COMPANY_EMAIL}] New application from ${fullName} for ${role}. Match Score: ${matchResult.score}%`);
         
         // Return success with match results
         res.json({ success: true, matchResult });
@@ -109,7 +114,9 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
 
 // Submit Contractor Application
 app.post('/api/contractors', (req, res) => {
+    console.log(`[Incoming] Contractor application received at ${new Date().toISOString()}`);
     const { companyName, email, phone, specialty, experience } = req.body;
+    console.log(`[Data] Company: ${companyName}, Specialty: ${specialty}`);
     
     const contractor = {
         id: Date.now(),

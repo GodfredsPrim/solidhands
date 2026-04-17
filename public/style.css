@@ -418,3 +418,38 @@ footer { padding: var(--spacing-lg) 5%; border-top: 1px solid var(--border); tex
     .service-card { padding: 1.5rem; }
     .section-header h2 { font-size: 2rem; }
 }
+/* Admin Dashboard Utilities */
+.match-high {
+    background: rgba(0, 255, 100, 0.1);
+    color: var(--success);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 700;
+    border: 1px solid rgba(0, 255, 100, 0.2);
+}
+
+.match-med {
+    background: rgba(255, 115, 0, 0.1);
+    color: var(--primary);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 115, 0, 0.2);
+}
+
+.role-tag {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+}
+
+.match-low {
+    background: rgba(255, 50, 50, 0.1);
+    color: var(--error);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 700;
+}
