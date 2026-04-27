@@ -43,22 +43,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-/**
- * Background Slideshow Manager
- * Handles cycling between videos and images provided in the public/videos folder.
- */
 class BackgroundManager {
     constructor() {
-        // Filenames with spaces/special chars are encoded in encodeSrc()
+        // Images first so the slideshow starts immediately while videos may still load
         this.assets = [
-            { type: 'video', src: 'videos/0_Dump_Truck_Mining_3840x2160.mp4' },
             { type: 'image', src: 'images/Incredible 8-Second Construction Hyper-Lapse.jpg' },
-            { type: 'video', src: 'videos/7021961_Technology_Construction_3840x2160.mp4' },
             { type: 'image', src: 'images/Miners at Kagem Emerald Mine.jpg' },
             { type: 'image', src: 'images/International Mining on X.jpg' },
             { type: 'image', src: 'images/Mina de oro a cielo abierto.jpg' },
             { type: 'image', src: 'images/Incredible 8-Second Construction Hyper-Lapse (1).jpg' },
             { type: 'image', src: 'images/Mining is still dangerous—but new tech in South Africa could keep workers safer.jpg' },
+            { type: 'video', src: 'videos/0_Dump_Truck_Mining_3840x2160.mp4' },
+            { type: 'video', src: 'videos/7021961_Technology_Construction_3840x2160.mp4' },
         ];
 
         this.currentIndex = 0;
@@ -67,23 +63,32 @@ class BackgroundManager {
             document.getElementById('layer2')
         ];
         this.activeLayerIndex = 0;
+        this.timer = null;
+
+        // Preload all images upfront so transitions are instant
+        this.assets
+            .filter(a => a.type === 'image')
+            .forEach(a => { new Image().src = this.encodeSrc(a.src); });
 
         this.init();
     }
 
-    // Encode each path segment separately so spaces and special chars work
     encodeSrc(src) {
         return src.split('/').map((part, i) =>
             i === 0 ? part : encodeURIComponent(part)
         ).join('/');
     }
 
+    schedule(delay) {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => this.nextSlide(), delay);
+    }
+
     init() {
-        if (this.layers[0] && this.layers[1]) {
-            this.showSlide(this.layers[this.activeLayerIndex], this.assets[this.currentIndex]);
-            this.layers[this.activeLayerIndex].classList.add('active');
-            setInterval(() => this.nextSlide(), 8000);
-        }
+        if (!this.layers[0] || !this.layers[1]) return;
+        this.showSlide(this.layers[this.activeLayerIndex], this.assets[this.currentIndex]);
+        this.layers[this.activeLayerIndex].classList.add('active');
+        this.schedule(6000);
     }
 
     showSlide(layer, asset) {
@@ -93,35 +98,56 @@ class BackgroundManager {
         if (asset.type === 'video') {
             const video = document.createElement('video');
             video.src = src;
-            video.autoplay = true;
             video.muted = true;
             video.loop = true;
             video.playsInline = true;
+            video.preload = 'auto';
+
+            // If video actually starts playing, let it run for 12s
+            video.addEventListener('playing', () => this.schedule(12000), { once: true });
+
+            // Skip to next slide on any failure
+            const skip = () => this.schedule(400);
+            video.addEventListener('error', skip, { once: true });
+            video.addEventListener('stalled', skip, { once: true });
+
+            // Hard timeout: skip if not playing within 5s (slow/blocked on deployment)
+            const watchdog = setTimeout(() => {
+                if (video.paused) skip();
+            }, 5000);
+            video.addEventListener('playing', () => clearTimeout(watchdog), { once: true });
+
             layer.appendChild(video);
+            video.play().catch(skip);
         } else {
             const img = document.createElement('img');
             img.src = src;
             img.alt = '';
-            // Skip broken images silently and jump to next
-            img.onerror = () => this.nextSlide();
+            img.onerror = () => this.schedule(400);
             layer.appendChild(img);
         }
     }
 
     nextSlide() {
+        clearTimeout(this.timer);
         const nextIndex = (this.currentIndex + 1) % this.assets.length;
         const nextLayerIndex = (this.activeLayerIndex + 1) % 2;
 
         const currentLayer = this.layers[this.activeLayerIndex];
-        const nextLayer = this.layers[nextLayerIndex];
+        const nextLayer    = this.layers[nextLayerIndex];
 
         this.showSlide(nextLayer, this.assets[nextIndex]);
 
         nextLayer.classList.add('active');
         currentLayer.classList.remove('active');
 
-        this.currentIndex = nextIndex;
-        this.activeLayerIndex = nextLayerIndex;
+        this.currentIndex      = nextIndex;
+        this.activeLayerIndex  = nextLayerIndex;
+
+        // Images get a fixed 6s; videos self-schedule via 'playing' / watchdog
+        if (this.assets[nextIndex].type === 'image') {
+            this.schedule(6000);
+        }
     }
 }
 
