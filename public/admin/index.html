@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | SolidHands GEE Engineering Ltd</title>
+    <title>Admin Dashboard | SolidHands Engineering & Industrial Services Limited</title>
     <link rel="stylesheet" href="../style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body style="background: var(--bg-main);">
     <nav id="navbar">
-        <div class="logo-container">
-            <a href="/"><img src="../logo.png" alt="SolidHands Logo"></a>
-        </div>
+        <a href="/" class="logo-link">
+            <div class="logo-pill"><img src="../logo.jpeg" alt="SolidHands Logo"></div>
+            <div class="logo-wordmark">
+                <span class="logo-name">SolidHands</span>
+                <span class="logo-tagline">Engineering &amp; Industrial</span>
+            </div>
+        </a>
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
             <li><a href="/careers.html">Careers</a></li>
             <li><a href="/contractors.html">Contractors</a></li>
         </ul>
         <div class="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
-            <button id="logoutBtn" style="display: none; background: none; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Logout</button>
-            <button class="mobile-menu-toggle" id="menuToggle">
-                <i data-lucide="menu"></i>
-            </button>
+            <button id="logoutBtn" style="display: none; background: none; border: 1px solid var(--border); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem;">Logout</button>
+            <button class="mobile-menu-toggle" id="menuToggle"><i data-lucide="menu"></i></button>
         </div>
     </nav>
 
-    <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <img src="../logo.png" alt="Logo">
+            <div class="logo-pill"><img src="../logo.jpeg" alt="Logo"></div>
             <button id="menuClose"><i data-lucide="x"></i></button>
         </div>
         <ul class="mobile-links">
@@ -184,20 +185,27 @@
 
     <!-- Theme Toggle -->
     <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
-        <i data-lucide="moon" id="themeIcon"></i>
+        <i data-lucide="sun" id="themeIcon"></i>
     </button>
 
     <script>
         lucide.createIcons();
 
-        // Theme Toggle
+        // Theme: light by default, dark 19:00–05:59 or manual
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            themeIcon.setAttribute('data-lucide', isLight ? 'sun' : 'moon');
+
+        function applyTheme(dark) {
+            document.body.classList.toggle('dark-mode', dark);
+            themeIcon.setAttribute('data-lucide', dark ? 'moon' : 'sun');
             lucide.createIcons();
+        }
+
+        const hour = new Date().getHours();
+        applyTheme(hour >= 19 || hour < 6);
+
+        themeToggle.addEventListener('click', () => {
+            applyTheme(!document.body.classList.contains('dark-mode'));
         });
 
         const loginForm = document.getElementById('loginForm');

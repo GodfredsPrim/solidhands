@@ -49,39 +49,50 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
  */
 class BackgroundManager {
     constructor() {
+        // Filenames with spaces/special chars are encoded in encodeSrc()
         this.assets = [
             { type: 'video', src: 'videos/0_Dump_Truck_Mining_3840x2160.mp4' },
-            { type: 'image', src: 'videos/Incredible 8-Second Construction Hyper-Lapse.jpg' },
+            { type: 'image', src: 'images/Incredible 8-Second Construction Hyper-Lapse.jpg' },
             { type: 'video', src: 'videos/7021961_Technology_Construction_3840x2160.mp4' },
-            { type: 'image', src: 'videos/Miners at Kagem Emerald Mine.jpg' },
-            { type: 'image', src: 'videos/Most-liked video _ 2_4M views · 50K reactions _ Found a pile of gold in the ground, worth millions #golddiscovery #findinggold #goldland _ Wit Discovery _ Facebook.jpg' }
+            { type: 'image', src: 'images/Miners at Kagem Emerald Mine.jpg' },
+            { type: 'image', src: 'images/International Mining on X.jpg' },
+            { type: 'image', src: 'images/Mina de oro a cielo abierto.jpg' },
+            { type: 'image', src: 'images/Incredible 8-Second Construction Hyper-Lapse (1).jpg' },
+            { type: 'image', src: 'images/Mining is still dangerous—but new tech in South Africa could keep workers safer.jpg' },
         ];
-        
+
         this.currentIndex = 0;
         this.layers = [
             document.getElementById('layer1'),
             document.getElementById('layer2')
         ];
         this.activeLayerIndex = 0;
-        
+
         this.init();
+    }
+
+    // Encode each path segment separately so spaces and special chars work
+    encodeSrc(src) {
+        return src.split('/').map((part, i) =>
+            i === 0 ? part : encodeURIComponent(part)
+        ).join('/');
     }
 
     init() {
         if (this.layers[0] && this.layers[1]) {
             this.showSlide(this.layers[this.activeLayerIndex], this.assets[this.currentIndex]);
             this.layers[this.activeLayerIndex].classList.add('active');
-            
-            setInterval(() => this.nextSlide(), 10000); // 10 seconds interval
+            setInterval(() => this.nextSlide(), 8000);
         }
     }
 
     showSlide(layer, asset) {
-        layer.innerHTML = ''; // Clear previous content
-        
+        layer.innerHTML = '';
+        const src = this.encodeSrc(asset.src);
+
         if (asset.type === 'video') {
             const video = document.createElement('video');
-            video.src = asset.src;
+            video.src = src;
             video.autoplay = true;
             video.muted = true;
             video.loop = true;
@@ -89,7 +100,10 @@ class BackgroundManager {
             layer.appendChild(video);
         } else {
             const img = document.createElement('img');
-            img.src = asset.src;
+            img.src = src;
+            img.alt = '';
+            // Skip broken images silently and jump to next
+            img.onerror = () => this.nextSlide();
             layer.appendChild(img);
         }
     }
@@ -97,19 +111,15 @@ class BackgroundManager {
     nextSlide() {
         const nextIndex = (this.currentIndex + 1) % this.assets.length;
         const nextLayerIndex = (this.activeLayerIndex + 1) % 2;
-        
+
         const currentLayer = this.layers[this.activeLayerIndex];
         const nextLayer = this.layers[nextLayerIndex];
-        const nextAsset = this.assets[nextIndex];
 
-        // Prepare next layer
-        this.showSlide(nextLayer, nextAsset);
-        
-        // Switch layers
+        this.showSlide(nextLayer, this.assets[nextIndex]);
+
         nextLayer.classList.add('active');
         currentLayer.classList.remove('active');
-        
-        // Update state
+
         this.currentIndex = nextIndex;
         this.activeLayerIndex = nextLayerIndex;
     }

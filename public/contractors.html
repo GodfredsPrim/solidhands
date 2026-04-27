@@ -3,46 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractors | SolidHands GEE Engineering Ltd</title>
+    <title>Contractors | SolidHands Engineering & Industrial Services Limited</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <nav id="navbar">
-        <div class="logo-container">
-            <a href="/"><img src="logo.png" alt="SolidHands Logo"></a>
-        </div>
+        <a href="/" class="logo-link">
+            <div class="logo-pill"><img src="logo.jpeg" alt="SolidHands Logo"></div>
+            <div class="logo-wordmark">
+                <span class="logo-name">SolidHands</span>
+                <span class="logo-tagline">Engineering &amp; Industrial</span>
+            </div>
+        </a>
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
             <li><a href="careers.html">Careers</a></li>
-            <li><a href="contractors.html" class="active">Contractors</a></li>
+            <li><a href="contractors.html" style="color: var(--primary);">Contractors</a></li>
         </ul>
         <div class="nav-actions">
-            <button class="mobile-menu-toggle" id="menuToggle">
-                <i data-lucide="menu"></i>
-            </button>
+            <button class="mobile-menu-toggle" id="menuToggle"><i data-lucide="menu"></i></button>
         </div>
     </nav>
 
-    <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-header">
-            <img src="logo.png" alt="Logo">
+            <div class="logo-pill"><img src="logo.jpeg" alt="Logo"></div>
             <button id="menuClose"><i data-lucide="x"></i></button>
         </div>
         <ul class="mobile-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
             <li><a href="careers.html">Careers</a></li>
-            <li><a href="contractors.html" class="active">Contractors</a></li>
+            <li><a href="contractors.html" style="color: var(--primary);">Contractors</a></li>
         </ul>
     </div>
 
     <header class="portal-header">
         <span class="section-tag">Partner With Us</span>
         <h1>Contractor Application</h1>
-        <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">Apply for project contracts and industrial partnerships with SolidHands.</p>
+        <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">Apply for project contracts and industrial partnerships with SolidHands Engineering &amp; Industrial Services Limited.</p>
     </header>
 
     <div class="portal-container">
@@ -68,11 +69,11 @@
                 <div class="form-group">
                     <label>Primary Specialty</label>
                     <select name="specialty" style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;">
-                        <option>Civil Construction</option>
+                        <option>Engineering &amp; Construction</option>
+                        <option>Mining &amp; Industrial Operations</option>
+                        <option>Recruitment &amp; Staffing</option>
+                        <option>Supply Chain &amp; Logistics</option>
                         <option>Heavy Equipment Supply</option>
-                        <option>Structural Welding</option>
-                        <option>Industrial Logistics</option>
-                        <option>Electrical Infrastructure</option>
                         <option>Environmental HSE</option>
                     </select>
                 </div>
@@ -97,12 +98,12 @@
     </div>
 
     <footer style="margin-top: 4rem;">
-        <p class="copyright">&copy; 2026 SolidHands GEE Engineering Ltd. | <a href="mailto:erskinegodswillekow@gmail.com" style="color: var(--primary);">erskinegodswillekow@gmail.com</a></p>
+        <p class="copyright">&copy; 2026 SolidHands Engineering & Industrial Services Limited. | <a href="mailto:erskinegodswillekow@gmail.com" style="color: var(--primary);">erskinegodswillekow@gmail.com</a></p>
     </footer>
 
     <!-- Theme Toggle -->
     <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
-        <i data-lucide="moon" id="themeIcon"></i>
+        <i data-lucide="sun" id="themeIcon"></i>
     </button>
 
     <script>
@@ -111,11 +112,18 @@
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            themeIcon.setAttribute('data-lucide', isLight ? 'sun' : 'moon');
+
+        function applyTheme(dark) {
+            document.body.classList.toggle('dark-mode', dark);
+            themeIcon.setAttribute('data-lucide', dark ? 'moon' : 'sun');
             lucide.createIcons();
+        }
+
+        const hour = new Date().getHours();
+        applyTheme(hour >= 19 || hour < 6);
+
+        themeToggle.addEventListener('click', () => {
+            applyTheme(!document.body.classList.contains('dark-mode'));
         });
 
         const form = document.getElementById('contractorForm');
