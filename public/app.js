@@ -45,16 +45,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 class BackgroundManager {
     constructor() {
-        // Images first so the slideshow starts immediately while videos may still load
+        // Videos interspersed with images so they appear early in the rotation
         this.assets = [
             { type: 'image', src: 'images/Incredible 8-Second Construction Hyper-Lapse.jpg' },
+            { type: 'video', src: 'videos/0_Dump_Truck_Mining_3840x2160.mp4' },
             { type: 'image', src: 'images/Miners at Kagem Emerald Mine.jpg' },
             { type: 'image', src: 'images/International Mining on X.jpg' },
+            { type: 'video', src: 'videos/7021961_Technology_Construction_3840x2160.mp4' },
             { type: 'image', src: 'images/Mina de oro a cielo abierto.jpg' },
             { type: 'image', src: 'images/Incredible 8-Second Construction Hyper-Lapse (1).jpg' },
             { type: 'image', src: 'images/Mining is still dangerous—but new tech in South Africa could keep workers safer.jpg' },
-            { type: 'video', src: 'videos/0_Dump_Truck_Mining_3840x2160.mp4' },
-            { type: 'video', src: 'videos/7021961_Technology_Construction_3840x2160.mp4' },
         ];
 
         this.currentIndex = 0;
@@ -103,18 +103,17 @@ class BackgroundManager {
             video.playsInline = true;
             video.preload = 'auto';
 
-            // If video actually starts playing, let it run for 12s
+            // If video starts playing, let it run for 12s
             video.addEventListener('playing', () => this.schedule(12000), { once: true });
 
-            // Skip to next slide on any failure
+            // Skip on hard error only (not stalled — stalled fires during normal buffering)
             const skip = () => this.schedule(400);
             video.addEventListener('error', skip, { once: true });
-            video.addEventListener('stalled', skip, { once: true });
 
-            // Hard timeout: skip if not playing within 5s (slow/blocked on deployment)
+            // Watchdog: 10s to start playing (generous for slow free-tier hosting)
             const watchdog = setTimeout(() => {
                 if (video.paused) skip();
-            }, 5000);
+            }, 10000);
             video.addEventListener('playing', () => clearTimeout(watchdog), { once: true });
 
             layer.appendChild(video);
