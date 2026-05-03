@@ -1,0 +1,146 @@
+{
+  "applications": [
+    {
+      "id": 1777802618642,
+      "fullName": "Kwaku Smoke",
+      "email": "kwakusmoke@yahoo.com",
+      "phone": "+233599966902",
+      "location": "Tarkwa",
+      "jobId": 1777802484396,
+      "jobTitle": "Cleaner",
+      "cvUrl": "/uploads/1777802618598-Introduction_to_Cybersecurity_Badge 2023.pdf",
+      "matchScore": 0,
+      "matchDetails": "Limited match. CV may not fully meet requirements.",
+      "matchKeywords": [],
+      "date": "2026-05-03T10:03:38.642Z"
+    },
+    {
+      "id": 1777802855414,
+      "fullName": "Godfred Bio",
+      "email": "godfredbio2004@gmail.com",
+      "phone": "+233599966902",
+      "location": "Juaboso",
+      "jobId": 1777802775009,
+      "jobTitle": "Cyber Security Professionalist",
+      "cvUrl": "/uploads/1777802855401-Introduction_to_Cybersecurity_Badge 2023.pdf",
+      "matchScore": 0,
+      "matchDetails": "Limited match. CV may not fully meet requirements.",
+      "matchKeywords": [],
+      "date": "2026-05-03T10:07:35.414Z"
+    },
+    {
+      "id": 1777803261169,
+      "fullName": "Vincent Agyenim Boateng",
+      "email": "vincentagyenim@yahoo.com",
+      "phone": "+233599966902",
+      "location": "Juaboso",
+      "jobId": 1777802775009,
+      "jobTitle": "Cyber Security Professionalist",
+      "cvUrl": "/uploads/1777803260964-Vincent_Cybersecurity_Resume.pdf",
+      "matchScore": 0,
+      "matchDetails": "Limited match. CV may not fully meet requirements.",
+      "matchKeywords": [],
+      "date": "2026-05-03T10:14:21.169Z"
+    },
+    {
+      "id": 1777804168877,
+      "fullName": "Vincent Agyenim Boateng",
+      "email": "vincentagyenim@yahoo.com",
+      "phone": "+233599966902",
+      "location": "Juaboso",
+      "jobId": 1777802775009,
+      "jobTitle": "Cyber Security Professionalist",
+      "cvUrl": "/uploads/1777804168838-Vincent_Cybersecurity_Resume.pdf",
+      "matchScore": 0,
+      "matchDetails": "Limited match. CV may not fully meet requirements.",
+      "matchKeywords": [],
+      "date": "2026-05-03T10:29:28.877Z"
+    },
+    {
+      "id": 1777809714142,
+      "fullName": "Vincent Agyenim Boateng",
+      "email": "godfredbio2004@gmail.com",
+      "phone": "+233599966902",
+      "location": "Cape Coast",
+      "jobId": 1777802775009,
+      "jobTitle": "Cyber Security Professionalist",
+      "cvUrl": "/uploads/1777809714095-Vincent_Cybersecurity_Resume.pdf",
+      "matchScore": 0,
+      "matchDetails": "Limited match. CV may not fully meet requirements.",
+      "matchKeywords": [],
+      "date": "2026-05-03T12:01:54.142Z"
+    },
+    {
+      "id": 1777810438767,
+      "fullName": "Vincent Agyenim Boateng",
+      "email": "godfredbio2004@gmail.com",
+      "phone": "+233599966902",
+      "location": "Cape Coast",
+      "jobId": 1777802775009,
+      "jobTitle": "Cyber Security Professionalist",
+      "cvUrl": "/uploads/1777810438550-Vincent_Cybersecurity_Resume.pdf",
+      "matchScore": 100,
+      "matchDetails": "Excellent match! CV strongly aligns with job requirements.",
+      "matchKeywords": [
+        {
+          "requirement": "Cybersecurity certificate",
+          "score": 100,
+          "matched": true,
+          "status": "matched"
+        }
+      ],
+      "date": "2026-05-03T12:13:58.767Z"
+    }
+  ],
+  "contractors": [],
+  "jobs": [
+    {
+      "id": 1777798535855,
+      "title": "Auto Mechanics",
+      "requirements": [
+        "WASSCE, NVTI Certificate\r",
+        "First Class Cerficate\r",
+        "3 years of working experience"
+      ],
+      "description": "Need auto mechanics at Damang Mines",
+      "photos": [],
+      "datePosted": "2026-05-03T08:55:35.855Z"
+    },
+    {
+      "id": 1777802484396,
+      "title": "Cleaner",
+      "requirements": [
+        "Good at carrying dustbins\r",
+        "Can sweep saa\r",
+        "BECE Certificate"
+      ],
+      "description": "Can a whole football field with 1 hr",
+      "photos": [],
+      "datePosted": "2026-05-03T10:01:24.397Z"
+    },
+    {
+      "id": 1777802775009,
+      "title": "Cyber Security Professionalist",
+      "requirements": [
+        "Cybersecurity certificate"
+      ],
+      "description": "Needs a cybersecurity to help our company",
+      "photos": [],
+      "datePosted": "2026-05-03T10:06:15.009Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1777810438769,
+      "type": "application",
+      "message": "New application from Vincent Agyenim Boateng for Cyber Security Professionalist (Match: 100%)",
+      "details": {
+        "applicationId": 1777810438767,
+        "jobId": "1777802775009",
+        "email": "godfredbio2004@gmail.com"
+      },
+      "date": "2026-05-03T12:13:58.769Z",
+      "read": false
+    }
+  ]
+}

@@ -146,7 +146,7 @@ class BackgroundManager {
         video.src          = this.encodeSrc(asset.src);
         video.muted        = true;
         video.playsInline  = true;
-        video.preload      = 'auto';
+        video.preload      = 'none'; // Changed from 'auto' to prevent auto-buffering issues
         // No loop — we want it to fire 'ended' when done
 
         let settled = false;
@@ -170,8 +170,8 @@ class BackgroundManager {
         video.addEventListener('canplaythrough', succeed, { once: true });
         video.addEventListener('error', fail, { once: true });
 
-        // 12-second budget to reach canplaythrough on slow hosting
-        const watchdog = setTimeout(fail, 12000);
+        // 5-second budget to reach canplaythrough - reduced from 12s to prevent freeze
+        const watchdog = setTimeout(fail, 5000);
 
         layer.appendChild(video);
         video.load();

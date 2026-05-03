@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Careers | SolidHands Engineering & Industrial Services Limited</title>
+    <title>Vacancy | SolidHands Engineering & Industrial Services Limited</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -19,7 +19,7 @@
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
-            <li><a href="careers.html" style="color: var(--primary);">Careers</a></li>
+            <li><a href="careers.html" style="color: var(--primary);">Vacancy</a></li>
             <li><a href="contractors.html">Contractors</a></li>
         </ul>
         <div class="nav-actions">
@@ -35,77 +35,90 @@
         <ul class="mobile-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
-            <li><a href="careers.html" style="color: var(--primary);">Careers</a></li>
+            <li><a href="careers.html" style="color: var(--primary);">Vacancy</a></li>
             <li><a href="contractors.html">Contractors</a></li>
         </ul>
     </div>
 
     <header class="portal-header">
-        <span class="section-tag">Join Our Team</span>
-        <h1>Engineering Careers</h1>
-        <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">Apply for engineering, mining, and technical roles — get AI-matched with the right opportunities at SolidHands.</p>
+        <h1>Current Vacancies</h1>
+        <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">Browse available positions and apply with AI-powered matching at SolidHands Engineering &amp; Industrial Services Limited.</p>
     </header>
 
     <div class="portal-container">
         <div class="glass-card">
-            <h2 style="margin-bottom: 2rem;">Apply Now</h2>
-            <form id="applyForm" enctype="multipart/form-data">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="john@example.com" required>
-                    </div>
+            <h2 style="margin-bottom: 2rem;">Available Positions</h2>
+            <div id="jobsList" style="margin-bottom: 2rem;">
+                <!-- Jobs will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Application Modal -->
+        <div id="applyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center;">
+            <div class="glass-card" style="width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 id="modalTitle">Apply for Position</h2>
+                    <button id="closeModal" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                </div>
+                
+                <div id="jobDetails" style="margin-bottom: 2rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                    <!-- Job details will be shown here -->
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="phone" name="phone" placeholder="+233 ..." required>
+                <form id="applyForm" enctype="multipart/form-data">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="john@example.com" required>
+                        </div>
                     </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+233 ..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Location Address</label>
+                            <input type="text" id="location" name="location" placeholder="Accra, Ghana" required>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Area of Expertise</label>
-                        <input type="text" id="role" name="role" list="roleList" placeholder="e.g. HME Mechanic" style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white;" required>
-                        <datalist id="roleList">
-                            <!-- Will be populated by JS -->
-                        </datalist>
+                        <input type="text" id="expertise" name="expertise" placeholder="e.g., Auto Mechanics, Welding, etc." required>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label>Upload CV (PDF or Word)</label>
-                    <div style="position: relative; border: 2px dashed rgba(255, 255, 255, 0.1); padding: 2rem; text-align: center; border-radius: var(--radius); cursor: pointer;" id="dropzone">
-                        <input type="file" id="cv" name="cv" accept=".pdf,.docx,.doc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" required>
-                        <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 1rem;"></i>
-                        <p id="fileName">Select or drag CV file</p>
+                    <div class="form-group">
+                        <label>Upload CV (PDF or Word)</label>
+                        <div style="position: relative; border: 2px dashed rgba(255, 255, 255, 0.1); padding: 2rem; text-align: center; border-radius: var(--radius); cursor: pointer;" id="dropzone">
+                            <input type="file" id="cv" name="cv" accept=".pdf,.docx,.doc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" required>
+                            <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 1rem;"></i>
+                            <p id="fileName">Select or drag CV file</p>
+                        </div>
                     </div>
+
+                    <input type="hidden" id="jobId" name="jobId">
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.1rem; margin-top: 1rem;">
+                        Submit Application
+                    </button>
+                </form>
+
+                <!-- Loading Overlay -->
+                <div id="aiOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 35, 0.9); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; text-align: center; border-radius: var(--radius);">
+                    <div class="scanning-beam" style="width: 80px; height: 80px; border: 4px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 2rem;"></div>
+                    <h3 id="aiStatus">AI is scanning your CV...</h3>
+                    <p style="color: var(--text-muted); margin-top: 1rem;">Analyzing skills and matching with job requirements.</p>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.1rem; margin-top: 1rem;">
-                    Submit Application
-                </button>
-            </form>
-
-            <!-- Loading Overlay -->
-            <div id="aiOverlay" style="display: none; fixed: top 0; left 0; width: 100%; height: 100%; background: rgba(10, 20, 35, 0.9); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; text-align: center; border-radius: var(--radius);">
-                <div class="scanning-beam" style="width: 80px; height: 80px; border: 4px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 2rem;"></div>
-                <h3 id="aiStatus">AI is scanning your CV...</h3>
-                <p style="color: var(--text-muted); margin-top: 1rem;">Analyzing skills and matching with engineering requirements.</p>
-            </div>
-
-            <!-- Result Box -->
-            <div id="resultBox" style="display: none; margin-top: 2rem; padding: 2rem; background: rgba(0, 255, 100, 0.05); border: 1px solid var(--success); border-radius: var(--radius);">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                    <i data-lucide="check-circle" style="color: var(--success);"></i>
-                    <h3>Application Successful!</h3>
-                </div>
-                <p id="matchSummary"></p>
-                <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
-                    <div id="scoreCircle" style="width: 60px; height: 60px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white;">90%</div>
-                    <span>AI Match Score</span>
+                <!-- Result Box -->
+                <div id="resultBox" style="display: none; margin-top: 2rem; padding: 2rem; background: rgba(0, 255, 100, 0.05); border: 1px solid var(--success); border-radius: var(--radius);">
+                    <!-- Results will be shown here -->
                 </div>
             </div>
         </div>
@@ -140,27 +153,134 @@
             applyTheme(!document.body.classList.contains('dark-mode'));
         });
 
-        // Populate Jobs
-        fetch('/api/jobs')
-            .then(res => res.json())
-            .then(jobs => {
-                const datalist = document.getElementById('roleList');
-                jobs.forEach(job => {
-                    const opt = document.createElement('option');
-                    opt.value = job.title;
-                    datalist.appendChild(opt);
-                });
-            });
+        // Load and display jobs
+        async function loadJobs() {
+            try {
+                const response = await fetch('/api/jobs');
+                const jobs = await response.json();
+                const jobsList = document.getElementById('jobsList');
+                
+                if (jobs.length === 0) {
+                    jobsList.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No vacancies available at the moment. Please check back later.</p>';
+                    return;
+                }
 
-        // File name preview
-        document.getElementById('cv').addEventListener('change', (e) => {
-            document.getElementById('fileName').textContent = e.target.files[0].name;
+                jobsList.innerHTML = jobs.map(job => `
+                    <div class="job-card" style="border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; background: rgba(255, 255, 255, 0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="margin: 0; color: var(--primary);">${job.title}</h3>
+                                <p style="margin: 0.5rem 0; color: var(--text-muted); font-size: 0.9rem;">Posted: ${new Date(job.datePosted).toLocaleDateString()}</p>
+                            </div>
+                            <button class="btn btn-primary apply-btn" data-job-id="${job.id}" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Apply Now</button>
+                        </div>
+                        ${job.description ? `<p style="margin-bottom: 1rem;">${job.description}</p>` : ''}
+                        <div style="margin-bottom: 1rem;">
+                            <h4 style="margin-bottom: 0.5rem; color: white;">Requirements:</h4>
+                            <ul style="margin: 0; padding-left: 1.5rem;">
+                                ${job.requirements.map(req => `<li style="margin-bottom: 0.25rem;">${req}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${job.photos && job.photos.length > 0 ? `
+                            <div style="margin-top: 1rem;">
+                                <h4 style="margin-bottom: 0.5rem; color: white;">Photos:</h4>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    ${job.photos.map(photo => `<img src="${photo}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;" alt="Job photo">`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                // Add event listeners to apply buttons
+                document.querySelectorAll('.apply-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const jobId = e.target.dataset.jobId;
+                        openApplyModal(jobId);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                document.getElementById('jobsList').innerHTML = '<p style="text-align: center; color: var(--error);">Error loading vacancies. Please try again later.</p>';
+            }
+        }
+
+        // Open apply modal
+        async function openApplyModal(jobId) {
+            try {
+                const jobsResponse = await fetch('/api/jobs');
+                const jobs = await jobsResponse.json();
+                const job = jobs.find(j => j.id == jobId);
+                
+                if (!job) {
+                    alert('Job not found');
+                    return;
+                }
+
+                document.getElementById('modalTitle').textContent = `Apply for ${job.title}`;
+                document.getElementById('jobDetails').innerHTML = `
+                    <h4>${job.title}</h4>
+                    ${job.description ? `<p>${job.description}</p>` : ''}
+                    <h5>Requirements:</h5>
+                    <ul>
+                        ${job.requirements.map(req => `<li>${req}</li>`).join('')}
+                    </ul>
+                `;
+                document.getElementById('jobId').value = jobId;
+                document.getElementById('applyModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } catch (error) {
+                console.error('Error opening modal:', error);
+            }
+        }
+
+        // Close modal
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('applyModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            // Reset form
+            document.getElementById('applyForm').reset();
+            document.getElementById('fileName').textContent = 'Select or drag CV file';
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('applyForm').style.display = 'block';
         });
 
-        // Form Submit
-        const form = document.getElementById('applyForm');
-        form.addEventListener('submit', async (e) => {
+        // File upload handling
+        const dropzone = document.getElementById('dropzone');
+        const cvInput = document.getElementById('cv');
+        const fileName = document.getElementById('fileName');
+
+        dropzone.addEventListener('click', () => cvInput.click());
+        cvInput.addEventListener('change', () => {
+            const file = cvInput.files[0];
+            if (file) {
+                fileName.textContent = file.name;
+            }
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
+            dropzone.style.borderColor = 'var(--primary)';
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                cvInput.files = files;
+                fileName.textContent = files[0].name;
+            }
+        });
+
+        // Form submission
+        document.getElementById('applyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
             const formData = new FormData(form);
             
             const overlay = document.getElementById('aiOverlay');
@@ -183,26 +303,40 @@
                         aiStatus.textContent = "AI Scanning CV & Matching...";
                         setTimeout(() => {
                             overlay.style.display = 'none';
-                            document.getElementById('resultBox').style.display = 'block';
-                            document.getElementById('matchSummary').textContent = result.matchResult.summary;
-                            document.getElementById('scoreCircle').textContent = result.matchResult.score + '%';
+                            const resultBox = document.getElementById('resultBox');
+                            resultBox.style.display = 'block';
+                            resultBox.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                    <i data-lucide="check-circle" style="color: var(--success);"></i>
+                                    <h3>Application Successful!</h3>
+                                </div>
+                                <p>${result.matchResult.summary}</p>
+                                <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
+                                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white;">${result.matchResult.score}%</div>
+                                    <span>AI Match Score</span>
+                                </div>
+                            `;
+                            lucide.createIcons();
                             form.style.display = 'none';
                         }, 2000);
                     } else {
-                        alert('Upload failed: ' + result.error);
                         overlay.style.display = 'none';
+                        alert(result.error || 'Application failed');
                     }
                 } else {
-                    const errorData = await response.json().catch(() => ({}));
-                    alert('Server Error: ' + (errorData.error || 'The file could not be processed. Please ensure it is a valid PDF or Word document.'));
                     overlay.style.display = 'none';
+                    const error = await response.json();
+                    alert(error.error || 'Application failed');
                 }
-            } catch (err) {
-                console.error(err);
-                alert('An error occurred');
+            } catch (error) {
+                console.error(error);
                 overlay.style.display = 'none';
+                alert('Submission failed. Please try again.');
             }
         });
+
+        // Load jobs on page load
+        loadJobs();
     </script>
 
     <style>

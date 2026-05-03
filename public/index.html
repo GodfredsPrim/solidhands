@@ -30,7 +30,7 @@
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
-            <li><a href="careers.html">Careers</a></li>
+            <li><a href="careers.html">Vacancy</a></li>
             <li><a href="contractors.html">Contractors</a></li>
         </ul>
 
@@ -53,7 +53,7 @@
         <ul class="mobile-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
-            <li><a href="careers.html">Careers</a></li>
+            <li><a href="careers.html">Vacancy</a></li>
             <li><a href="contractors.html">Contractors</a></li>
             <li><a href="#contact" style="color: var(--primary);">Get Quote &rarr;</a></li>
         </ul>
@@ -83,7 +83,7 @@
 
                 <div class="hero-actions">
                     <a href="careers.html" class="btn btn-primary">
-                        Join Our Team <i data-lucide="arrow-right"></i>
+                        View Vacancies <i data-lucide="arrow-right"></i>
                     </a>
                     <a href="contractors.html" class="btn btn-secondary">Partner With Us</a>
                 </div>
@@ -107,6 +107,25 @@
                         <div class="hero-stat-label">Service Divisions</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ╔══════════════════════════════╗
+         ║       JOB SLIDESHOW        ║
+         ╚══════════════════════════════╝ -->
+    <section class="job-slideshow-section">
+        <div class="job-slideshow-container">
+            <div class="job-slideshow-header">
+                <span class="job-slideshow-label">Latest Vacancies</span>
+                <div class="job-slideshow-controls">
+                    <button class="job-slide-btn" id="prevJob" aria-label="Previous job">&larr;</button>
+                    <div class="job-indicators" id="jobIndicators"></div>
+                    <button class="job-slide-btn" id="nextJob" aria-label="Next job">&rarr;</button>
+                </div>
+            </div>
+            <div class="job-slideshow" id="jobSlideshow">
+                <!-- Jobs will be loaded here -->
             </div>
         </div>
     </section>
@@ -377,6 +396,117 @@
             galleryImg.parentElement.addEventListener('mouseenter', () => { galleryImg.style.transform = 'scale(1.04)'; });
             galleryImg.parentElement.addEventListener('mouseleave', () => { galleryImg.style.transform = 'scale(1)'; });
         }
+
+        // Debug: Check if script is running
+        console.log('Script block started');
+        
+        // Test DOM manipulation
+        const testElement = document.getElementById('jobSlideshow');
+        if (testElement) {
+            testElement.innerHTML = '<div style="color: red; padding: 20px;">JavaScript is working!</div>';
+        } else {
+            console.log('jobSlideshow element not found');
+        }
+
+        // Load and display jobs in slideshow format
+        async function loadMainPageJobs() {
+            console.log('loadMainPageJobs called');
+            try {
+                const response = await fetch('/api/jobs');
+                const jobs = await response.json();
+                console.log('Jobs fetched:', jobs);
+                
+                console.log('Using test jobs:', jobs);
+                const slideshow = document.getElementById('jobSlideshow');
+                const indicators = document.getElementById('jobIndicators');
+
+                console.log('Slideshow element:', slideshow);
+                console.log('Jobs length:', jobs.length);
+
+                if (!jobs || jobs.length === 0) {
+                    console.log('No jobs found, hiding slideshow');
+                    document.querySelector('.job-slideshow-section').style.display = 'none';
+                    return;
+                }
+
+                let currentJobIndex = 0;
+
+                function createJobSlide(job, isActive = false) {
+                    console.log('Creating slide for job:', job.title, 'isActive:', isActive);
+                    const description = job.description ? job.description : 'Explore this vacancy and apply directly today.';
+                    const requirementsList = Array.isArray(job.requirements) ? job.requirements.slice(0, 2).map(req => `<li>${req}</li>`).join('') : '';
+
+                    const html = `
+                        <div class="job-slide ${isActive ? 'active' : ''}">
+                            <div class="job-slide-content">
+                                <h3>${job.title}</h3>
+                                <p class="job-slide-meta">Posted: ${new Date(job.datePosted).toLocaleDateString()}</p>
+                                <p class="job-slide-description">${description}</p>
+                                ${requirementsList ? `<ul class="job-slide-bullets">${requirementsList}</ul>` : ''}
+                                <div class="job-slide-actions">
+                                    <a href="careers.html" class="btn btn-primary">Apply Now</a>
+                                    <a href="careers.html" class="btn btn-secondary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    console.log('Generated HTML:', html);
+                    return html;
+                }
+
+                function updateSlideshow() {
+                    console.log('updateSlideshow called, currentJobIndex:', currentJobIndex);
+                    const slides = jobs.map((job, index) => createJobSlide(job, index === currentJobIndex)).join('');
+                    console.log('Generated slides HTML:', slides);
+                    slideshow.innerHTML = slides;
+
+                    // Update indicators
+                    const indicatorDots = jobs.map((_, index) => 
+                        `<button class="job-indicator ${index === currentJobIndex ? 'active' : ''}" data-slide="${index}"></button>`
+                    ).join('');
+                    indicators.innerHTML = indicatorDots;
+                    console.log('Indicators HTML:', indicatorDots);
+
+                    // Add indicator click handlers
+                    document.querySelectorAll('.job-indicator').forEach((indicator, index) => {
+                        indicator.addEventListener('click', () => {
+                            currentJobIndex = index;
+                            updateSlideshow();
+                        });
+                    });
+                }
+
+                function nextJob() {
+                    currentJobIndex = (currentJobIndex + 1) % jobs.length;
+                    updateSlideshow();
+                }
+
+                function prevJob() {
+                    currentJobIndex = (currentJobIndex - 1 + jobs.length) % jobs.length;
+                    updateSlideshow();
+                }
+
+                // Initialize slideshow
+                console.log('About to call updateSlideshow');
+                updateSlideshow();
+
+                // Add navigation event listeners
+                document.getElementById('nextJob')?.addEventListener('click', nextJob);
+                document.getElementById('prevJob')?.addEventListener('click', prevJob);
+
+                // Auto-rotate every 6 seconds
+                setInterval(nextJob, 6000);
+
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+            }
+        }
+
+        // Load jobs when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, about to call loadMainPageJobs');
+            loadMainPageJobs();
+        });
     </script>
 </body>
 

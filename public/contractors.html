@@ -19,7 +19,7 @@
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
-            <li><a href="careers.html">Careers</a></li>
+            <li><a href="careers.html">Vacancy</a></li>
             <li><a href="contractors.html" style="color: var(--primary);">Contractors</a></li>
         </ul>
         <div class="nav-actions">
@@ -35,7 +35,7 @@
         <ul class="mobile-links">
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
-            <li><a href="careers.html">Careers</a></li>
+            <li><a href="careers.html">Vacancy</a></li>
             <li><a href="contractors.html" style="color: var(--primary);">Contractors</a></li>
         </ul>
     </div>
@@ -49,7 +49,7 @@
     <div class="portal-container">
         <div class="glass-card">
             <h2 style="margin-bottom: 2rem;">Company Details</h2>
-            <form id="contractorForm">
+            <form id="contractorForm" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Company/Entity Name</label>
                     <input type="text" name="companyName" placeholder="Global Logistics Ltd" required>
@@ -81,6 +81,24 @@
                 <div class="form-group">
                     <label>Years of Experience / Portfolio Summary</label>
                     <textarea name="experience" rows="4" placeholder="Tell us about your previous major projects..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Company Registration Certificate</label>
+                    <div style="position: relative; border: 2px dashed rgba(255, 255, 255, 0.1); padding: 2rem; text-align: center; border-radius: var(--radius); cursor: pointer;" id="certificateDropzone">
+                        <input type="file" id="certificate" name="certificate" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" required>
+                        <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <p id="certificateFileName">Select or drag certificate file</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Proposal Documents (Company Operations)</label>
+                    <div style="position: relative; border: 2px dashed rgba(255, 255, 255, 0.1); padding: 2rem; text-align: center; border-radius: var(--radius); cursor: pointer;" id="proposalDropzone">
+                        <input type="file" id="proposal" name="proposal" accept=".pdf,.doc,.docx,.zip" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" required>
+                        <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <p id="proposalFileName">Select or drag proposal document</p>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.1rem; margin-top: 1rem;">
@@ -129,7 +147,48 @@
         const form = document.getElementById('contractorForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = Object.fromEntries(new FormData(form));
+        // File upload handling
+        function setupFileUpload(dropzoneId, inputId, fileNameId) {
+            const dropzone = document.getElementById(dropzoneId);
+            const input = document.getElementById(inputId);
+            const fileName = document.getElementById(fileNameId);
+
+            dropzone.addEventListener('click', () => input.click());
+            input.addEventListener('change', () => {
+                const file = input.files[0];
+                if (file) {
+                    fileName.textContent = file.name;
+                }
+            });
+
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.style.borderColor = 'var(--primary)';
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    input.files = files;
+                    fileName.textContent = files[0].name;
+                }
+            });
+        }
+
+        setupFileUpload('certificateDropzone', 'certificate', 'certificateFileName');
+        setupFileUpload('proposalDropzone', 'proposal', 'proposalFileName');
+
+        // Form submission
+        document.getElementById('contractorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
             
             const btn = form.querySelector('button');
             btn.disabled = true;
@@ -138,8 +197,7 @@
             try {
                 const response = await fetch('/api/contractors', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                    body: formData
                 });
                 const result = await response.json();
 
@@ -153,6 +211,7 @@
                 btn.disabled = false;
                 btn.textContent = "Submit Partner Application";
             }
+        });
         });
     </script>
     <style>

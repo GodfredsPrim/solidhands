@@ -3,181 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | SolidHands Engineering & Industrial Services Limited</title>
+    <title>Admin Dashboard | SolidHands</title>
     <link rel="stylesheet" href="../style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body style="background: var(--bg-main);">
-    <nav id="navbar">
-        <a href="/" class="logo-link">
+    <!-- Admin Navbar (No Home Link) -->
+    <nav id="navbar" style="box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+        <a href="#" class="logo-link" style="pointer-events: none;">
             <div class="logo-pill"><img src="../logo.jpeg" alt="SolidHands Logo"></div>
             <div class="logo-wordmark">
                 <span class="logo-name">SolidHands</span>
-                <span class="logo-tagline">Engineering &amp; Industrial</span>
+                <span class="logo-tagline">Admin Control</span>
             </div>
         </a>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/careers.html">Careers</a></li>
-            <li><a href="/contractors.html">Contractors</a></li>
-        </ul>
-        <div class="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
-            <button id="logoutBtn" style="display: none; background: none; border: 1px solid var(--border); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem;">Logout</button>
-            <button class="mobile-menu-toggle" id="menuToggle"><i data-lucide="menu"></i></button>
+        <ul class="nav-links" style="visibility: hidden; width: 0; display: none;"></ul>
+        <div class="nav-actions" style="gap: 1rem; display: flex; align-items: center;">
+            <span id="adminUser" style="color: var(--text-muted); font-size: 0.9rem;">Admin User</span>
+            <button id="logoutBtn" style="background: var(--error); border: none; color: white; padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Logout</button>
         </div>
     </nav>
-
-    <div class="mobile-nav" id="mobileNav">
-        <div class="mobile-nav-header">
-            <div class="logo-pill"><img src="../logo.jpeg" alt="Logo"></div>
-            <button id="menuClose"><i data-lucide="x"></i></button>
-        </div>
-        <ul class="mobile-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/careers.html">Careers</a></li>
-            <li><a href="/contractors.html">Contractors</a></li>
-        </ul>
-    </div>
 
     <!-- Login Screen -->
     <div id="loginScreen" style="height: 100vh; display: flex; align-items: center; justify-content: center; padding: 5%;">
         <div class="glass-card" style="width: 100%; max-width: 400px; text-align: center;">
             <div style="width: 60px; height: 60px; background: rgba(255,115,0,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--primary);">
-                <i data-lucide="lock" style="width: 30px; height: 30px;"></i>
+                <i data-lucide="shield" style="width: 30px; height: 30px;"></i>
             </div>
-            <h2 style="margin-bottom: 2rem;">Admin Access</h2>
+            <h2 style="margin-bottom: 1rem;">Admin Access</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Enter master password to access dashboard</p>
             <form id="loginForm">
                 <div class="form-group">
                     <label>Master Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required style="text-align: center; letter-spacing: 4px;">
+                    <input type="password" id="password" placeholder="••••••••" required style="text-align: center; letter-spacing: 3px;">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Authenticate</button>
+                <button type="submit" id="loginBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">Authenticate</button>
             </form>
-            <p id="loginError" style="color: var(--error); margin-top: 1rem; display: none; font-size: 0.85rem;">Incorrect master password.</p>
+            <p id="loginError" style="color: var(--error); margin-top: 1rem; display: none; font-size: 0.85rem;">Incorrect master password. Access denied.</p>
         </div>
     </div>
 
-    <!-- Dashboard Content -->
-    <main id="dashboard" style="display: none; padding: var(--spacing-xl) 5%;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
-            <div>
-                <span class="section-tag">Management Console</span>
-                <h1>Overview</h1>
-            </div>
-            <div style="display: flex; gap: 1rem;">
-                <button class="tab-btn active" data-tab="candidates">Candidates</button>
-                <button class="tab-btn" data-tab="contractors">Contractors</button>
-                <button class="tab-btn" data-tab="jobs">Job Listings</button>
-            </div>
+    <!-- Dashboard Main -->
+    <main id="dashboard" style="display: none; padding: 2rem 5%; min-height: calc(100vh - 80px);">
+        <!-- Dashboard Header -->
+        <div style="margin-bottom: 3rem;">
+            <span class="section-tag">Administration</span>
+            <h1 style="margin-top: 0.5rem;">Control Center</h1>
         </div>
 
-        <!-- Stats Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-            <div class="glass-card" style="padding: 1.5rem;">
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Total Applications</p>
-                <h2 id="statApplications" style="font-size: 2.5rem; margin: 0.5rem 0;">0</h2>
-                <div style="color: var(--success); font-size: 0.8rem;">+12% this week</div>
-            </div>
-            <div class="glass-card" style="padding: 1.5rem;">
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Partner Contractors</p>
-                <h2 id="statContractors" style="font-size: 2.5rem; margin: 0.5rem 0;">0</h2>
-                <div style="color: var(--primary); font-size: 0.8rem;">Active bids</div>
-            </div>
-            <div class="glass-card" style="padding: 1.5rem;">
-                <p style="color: var(--text-muted); font-size: 0.9rem;">High-Match Rate</p>
-                <h2 id="statMatches" style="font-size: 2.5rem; margin: 0.5rem 0;">0%</h2>
-                <div style="color: var(--success); font-size: 0.8rem;">Ready for interview</div>
-            </div>
+        <!-- Tab Navigation -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+            <button class="admin-tab-btn active" data-tab="vacancies">
+                <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                <span>Vacancies</span>
+            </button>
+            <button class="admin-tab-btn" data-tab="contractors">
+                <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                <span>Contractors</span>
+            </button>
+            <button class="admin-tab-btn" data-tab="applications">
+                <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+                <span>Applications</span>
+            </button>
+            <button class="admin-tab-btn" data-tab="notifications">
+                <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+                <span>Notifications</span>
+            </button>
+            <button class="admin-tab-btn" data-tab="analytics">
+                <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                <span>Analytics</span>
+            </button>
+            <button class="admin-tab-btn" data-tab="tools">
+                <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+                <span>Tools</span>
+            </button>
         </div>
 
-        <!-- Candidates Tab -->
-        <section id="tabCandidates" class="tab-content">
-            <div class="glass-card" style="padding: 0; overflow: hidden;" id="candidatesTableContainer">
-                <table style="width: 100%; border-collapse: collapse;" class="desktop-only-table">
-                    <thead style="background: rgba(255,255,255,0.03);">
-                        <tr>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Name</th>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Role</th>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Match Score</th>
-                            <th style="padding: 1.5rem; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="candidatesList">
-                        <!-- Data rows here -->
-                    </tbody>
-                </table>
+        <!-- TAB 1: VACANCIES -->
+        <section id="tabVacancies" class="admin-tab-content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; align-items: start;">
+                <!-- Post New Job Form -->
+                <div class="glass-card" style="padding: 2rem;">
+                    <h3 style="margin-top: 0;">Post New Job</h3>
+                    <form id="addJobForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Job Title *</label>
+                            <input type="text" id="jobTitle" placeholder="e.g., Auto Mechanic" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="jobDescription" rows="3" placeholder="Brief job description..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Requirements (one per line) *</label>
+                            <textarea id="jobRequirements" rows="5" placeholder="5+ years experience&#10;Valid license&#10;Safety certified" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Post Job</button>
+                    </form>
+                </div>
+
+                <!-- Job Statistics -->
+                <div>
+                    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 0.5rem 0;">Active Vacancies</p>
+                        <h2 id="statsVacancies" style="font-size: 2rem; margin: 0; color: var(--primary);">0</h2>
+                    </div>
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 0.5rem 0;">Total Applications</p>
+                        <h2 id="statsApplications" style="font-size: 2rem; margin: 0; color: var(--success);">0</h2>
+                    </div>
+                </div>
             </div>
-            <div id="candidatesCardsList" class="mobile-only-cards"></div>
+
+            <!-- Current Vacancies Table -->
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 2rem; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0;">Current Job Vacancies</h3>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: rgba(255,115,0,0.05);">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Title</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Requirements</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Posted</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vacanciesTable">
+                            <tr>
+                                <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No vacancies posted yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CONTRACTORS -->
+        <section id="tabContractors" class="admin-tab-content" style="display: none;">
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">Partner Contractors</h3>
+                    <span class="section-tag" id="contractorCount">0 registered</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: rgba(255,115,0,0.05);">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Company</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Specialty</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Contact</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Experience</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">Files</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractorsTable">
+                            <tr>
+                                <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No contractors registered.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: APPLICATIONS -->
+        <section id="tabApplications" class="admin-tab-content" style="display: none;">
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <button id="filterAllApps" class="filter-btn active">All Applications</button>
+                <button id="filterHighMatch" class="filter-btn">High Match (70%+)</button>
+                <button id="filterMedMatch" class="filter-btn">Medium Match (40-69%)</button>
+            </div>
+
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">Job Applications</h3>
+                    <span class="section-tag" id="appCount">0 applications</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: rgba(255,115,0,0.05);">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Candidate</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Job Applied</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Location</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">Match Score</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTable">
+                            <tr>
+                                <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No applications yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <!-- Match Details Modal -->
-            <div id="matchModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; padding: 20px;">
-                <div class="glass-card" style="max-width: 600px; width: 100%; position: relative;">
-                    <button id="closeMatchModal" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; cursor: pointer;"><i data-lucide="x"></i></button>
-                    <h2 style="margin-bottom: 1.5rem;">AI Match Details</h2>
+            <div id="matchModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; align-items: center; justify-content: center; padding: 2rem;">
+                <div class="glass-card" style="max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="margin: 0;">Match Analysis</h2>
+                        <button id="closeMatchModal" style="background: none; border: none; color: var(--text-main); cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                        </button>
+                    </div>
                     <div id="matchModalContent"></div>
                 </div>
             </div>
         </section>
-
-        <!-- Contractors Tab -->
-        <section id="tabContractors" class="tab-content" style="display: none;">
-            <div class="glass-card" style="padding: 0; overflow: hidden;" id="contractorsTableContainer">
-                <table style="width: 100%; border-collapse: collapse;" class="desktop-only-table">
-                    <thead style="background: rgba(255,255,255,0.03);">
-                        <tr>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Company</th>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Specialty</th>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Contact</th>
-                            <th style="padding: 1.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05);">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="contractorsList">
-                        <!-- Data rows here -->
-                    </tbody>
-                </table>
+        <!-- TAB 4: NOTIFICATIONS -->
+        <section id="tabNotifications" class="admin-tab-content" style="display: none;">
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">System Notifications</h3>
+                    <span class="section-tag" id="notificationCount">0 notifications</span>
+                </div>
+                <div id="notificationsList" style="max-height: 600px; overflow-y: auto;">
+                    <!-- Notifications will be loaded here -->
+                </div>
             </div>
-            <div id="contractorsCardsList" class="mobile-only-cards"></div>
+        </section>
+        <!-- TAB 4: ANALYTICS -->
+        <section id="tabAnalytics" class="admin-tab-content" style="display: none;">
+            <!-- Statistics Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+                <div class="glass-card" style="padding: 2rem; text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Total Applications</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;" id="analyticsApps">0</div>
+                    <div style="color: var(--success); font-size: 0.85rem;" id="analyticsAppsChange">↑ 0 this month</div>
+                </div>
+
+                <div class="glass-card" style="padding: 2rem; text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Active Vacancies</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;" id="analyticsVacancies">0</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Open positions</div>
+                </div>
+
+                <div class="glass-card" style="padding: 2rem; text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Partner Contractors</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--success); margin-bottom: 0.5rem;" id="analyticsContractors">0</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">Registered partners</div>
+                </div>
+
+                <div class="glass-card" style="padding: 2rem; text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Avg Match Score</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--warning); margin-bottom: 0.5rem;" id="analyticsAvgScore">0%</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem;">AI matching average</div>
+                </div>
+            </div>
+
+            <!-- Match Distribution -->
+            <div class="glass-card" style="padding: 2rem;">
+                <h3 style="margin-top: 0;">Application Match Distribution</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="padding: 1.5rem; background: rgba(76, 175, 80, 0.1); border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.3); text-align: center;">
+                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--success);" id="matchHigh">0</div>
+                        <div style="font-size: 0.9rem; color: var(--success); margin-top: 0.5rem;">High Match (70%+)</div>
+                    </div>
+                    <div style="padding: 1.5rem; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3); text-align: center;">
+                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--warning);" id="matchMed">0</div>
+                        <div style="font-size: 0.9rem; color: var(--warning); margin-top: 0.5rem;">Medium Match (40-69%)</div>
+                    </div>
+                    <div style="padding: 1.5rem; background: rgba(244, 67, 54, 0.1); border-radius: 8px; border: 1px solid rgba(244, 67, 54, 0.3); text-align: center;">
+                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--error);" id="matchLow">0</div>
+                        <div style="font-size: 0.9rem; color: var(--error); margin-top: 0.5rem;">Low Match (&lt;40%)</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- Jobs Section -->
-        <section id="tabJobs" class="tab-content" style="display: none;">
-            <div class="glass-card" style="margin-bottom: 2rem; padding: 1.5rem;">
-                <h3 style="margin-bottom: 1rem;">Add New Job Vacancy</h3>
-                <form id="addJobForm" style="display: flex; gap: 1rem; align-items: flex-end;">
-                    <div class="form-group" style="margin-bottom: 0; flex: 2;">
-                        <label>Job Title</label>
-                        <input type="text" id="jobTitle" placeholder="e.g. Civil Engineer" required>
+        <!-- TAB 5: TOOLS -->
+        <section id="tabTools" class="admin-tab-content" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <!-- Export Data -->
+                <div class="glass-card" style="padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <i data-lucide="download" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                        <h3 style="margin: 0;">Export Data</h3>
                     </div>
-                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
-                        <label>Category</label>
-                        <select id="jobCategory">
-                            <option>Engineering</option>
-                            <option>Construction</option>
-                            <option>Logistics</option>
-                            <option>Technical</option>
-                            <option>HSE</option>
-                            <option>Admin</option>
-                        </select>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Download all platform data as JSON file for backup or analysis.</p>
+                    <button id="exportBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        <i data-lucide="download-cloud" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i>
+                        Export All Data
+                    </button>
+                </div>
+
+                <!-- Clear Applications -->
+                <div class="glass-card" style="padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <i data-lucide="trash-2" style="width: 24px; height: 24px; color: var(--error);"></i>
+                        <h3 style="margin: 0;">Clear Data</h3>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="padding: 0.9rem 1.5rem;">Add Vacancy</button>
-                </form>
-            </div>
-            <div class="glass-card">
-                <h3>Current Vacancies</h3>
-                <div class="table-container">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
-                        <thead>
-                            <tr style="text-align: left; border-bottom: 1px solid var(--border);">
-                                <th style="padding: 1rem;">ID</th>
-                                <th style="padding: 1rem;">Title</th>
-                                <th style="padding: 1rem;">Category</th>
-                                <th style="padding: 1rem; text-align: right;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="jobsList">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Permanently delete all applications and contractor records.</p>
+                    <button id="clearDataBtn" class="btn" style="width: 100%; justify-content: center; background: var(--error); color: white; border: none;">
+                        <i data-lucide="alert-triangle" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i>
+                        Clear All Data
+                    </button>
+                </div>
+
+                <!-- Bulk Email -->
+                <div class="glass-card" style="padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <i data-lucide="mail" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                        <h3 style="margin: 0;">Bulk Email</h3>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Send emails to applicants, contractors, or all users.</p>
+                    <form id="bulkEmailForm">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Recipients</label>
+                            <select id="emailRecipients" required>
+                                <option value="">Select Recipients</option>
+                                <option value="applicants">All Applicants</option>
+                                <option value="contractors">All Contractors</option>
+                                <option value="all">All Users</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Subject</label>
+                            <input type="text" id="emailSubject" placeholder="Email subject" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label>Message</label>
+                            <textarea id="emailMessage" rows="4" placeholder="Email message..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                            <i data-lucide="send" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i>
+                            Send Bulk Email
+                        </button>
+                    </form>
+                </div>
+
+                <!-- System Info -->
+                <div class="glass-card" style="padding: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <i data-lucide="info" style="width: 24px; height: 24px; color: var(--primary);"></i>
+                        <h3 style="margin: 0;">System Info</h3>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.8;">
+                        <div>Platform: SolidHands Recruitment</div>
+                        <div>Version: 1.0</div>
+                        <div id="systemTime" style="margin-top: 1rem; color: var(--success); font-weight: 500;">Last sync: --</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -185,198 +357,314 @@
 
     <!-- Theme Toggle -->
     <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
-        <i data-lucide="sun" id="themeIcon"></i>
+        <i data-lucide="sun"></i>
     </button>
 
     <script>
         lucide.createIcons();
 
-        // Theme: light by default, dark 19:00–05:59 or manual
+        // ==================== THEME ====================
         const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-
         function applyTheme(dark) {
             document.body.classList.toggle('dark-mode', dark);
-            themeIcon.setAttribute('data-lucide', dark ? 'moon' : 'sun');
+            if (themeToggle) {
+                const icon = themeToggle.querySelector('i');
+                if (icon) {
+                    icon.setAttribute('data-lucide', dark ? 'moon' : 'sun');
+                }
+            }
             lucide.createIcons();
         }
-
         const hour = new Date().getHours();
         applyTheme(hour >= 19 || hour < 6);
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                applyTheme(!document.body.classList.contains('dark-mode'));
+            });
+        }
 
-        themeToggle.addEventListener('click', () => {
-            applyTheme(!document.body.classList.contains('dark-mode'));
-        });
-
-        const loginForm = document.getElementById('loginForm');
+        // ==================== AUTHENTICATION ====================
         const loginScreen = document.getElementById('loginScreen');
         const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
+        const loginError = document.getElementById('loginError');
 
-        // Check Session
-        if (localStorage.getItem('adminToken')) {
-            showDashboard();
+        // Check session on page load
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem('adminAuth') === 'true';
+            if (isAuth) {
+                showDashboard();
+            } else {
+                loginScreen.style.display = 'flex';
+                dashboard.style.display = 'none';
+            }
         }
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Authenticating...';
             const password = document.getElementById('password').value;
             
-            const response = await fetch('/api/admin/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password })
-            });
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
 
-            if (response.ok) {
-                localStorage.setItem('adminToken', 'active');
-                showDashboard();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
+                if (res.ok) {
+                    sessionStorage.setItem('adminAuth', 'true');
+                    loginForm.reset();
+                    loginError.style.display = 'none';
+                    showDashboard();
+                } else {
+                    loginError.textContent = 'Incorrect master password. Access denied.';
+                    loginError.style.display = 'block';
+                    document.getElementById('password').value = '';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Authenticate';
+                }
+            } catch (err) {
+                console.error('Login fetch error:', err);
+                loginError.textContent = 'Connection error. Please try again.';
+                loginError.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Authenticate';
             }
         });
 
         logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('adminToken');
-            location.reload();
+            sessionStorage.removeItem('adminAuth');
+            loginScreen.style.display = 'flex';
+            dashboard.style.display = 'none';
+            loginForm.reset();
+            loginError.style.display = 'none';
+            document.getElementById('password').value = '';
         });
+
+        // Prevent navigation to main page
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('a') && e.target.href && e.target.href.includes('/')) {
+                const href = e.target.getAttribute('href');
+                if (href === '/' || href === '/index.html') {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        }, true);
 
         async function showDashboard() {
             loginScreen.style.display = 'none';
             dashboard.style.display = 'block';
-            logoutBtn.style.display = 'block';
-            loadData();
+            try {
+                await loadAllData();
+                startNotificationPolling();
+            } catch (err) {
+                console.error('Error loading dashboard data:', err);
+            }
         }
 
-        async function loadData() {
-            const res = await fetch('/api/admin/data');
-            const data = await res.json();
-            
-            // Store globally to avoid attribute issues
-            window.__adminData = data;
+        // ==================== DATA LOADING ====================
+        let allData = { jobs: [], applications: [], contractors: [], notifications: [] };
+        let filteredApps = [];
+        let notificationInterval = null;
 
-            // Stats
-            document.getElementById('statApplications').textContent = data.applications.length;
-            document.getElementById('statContractors').textContent = data.contractors.length;
-            const avgMatch = data.applications.length > 0 
-                ? Math.round(data.applications.reduce((acc, curr) => acc + curr.matchScore, 0) / data.applications.length)
-                : 0;
-            document.getElementById('statMatches').textContent = avgMatch + '%';
+        async function loadAllData() {
+            try {
+                const res = await fetch('/api/admin/data');
+                if (!res.ok) {
+                    console.error('Failed to load data. Status:', res.status);
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                allData = await res.json();
+                loadVacanciesTab();
+                loadContractorsTab();
+                loadApplicationsTab();
+                loadNotificationsTab();
+                loadAnalytics();
+            } catch (err) {
+                console.error('Failed to load admin data:', err);
+            }
+        }
 
-            // Candidates
-            const candList = document.getElementById('candidatesList');
-            const candCards = document.getElementById('candidatesCardsList');
-            
-            if (data.applications.length > 0) {
-                candList.innerHTML = data.applications.map((app, index) => `
-                    <tr>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${app.fullName}</td>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${app.role}</td>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <span class="${app.matchScore > 70 ? 'match-high' : 'match-med'}">${app.matchScore}%</span>
+        function startNotificationPolling() {
+            if (notificationInterval) clearInterval(notificationInterval);
+            notificationInterval = setInterval(async () => {
+                if (dashboard.style.display === 'none') return;
+                try {
+                    const res = await fetch('/api/admin/data');
+                    if (!res.ok) return;
+                    allData = await res.json();
+                    loadNotificationsTab();
+                } catch (err) {
+                    console.error('Notification polling failed:', err);
+                }
+            }, 10000);
+        }
+
+        // ==================== TAB 1: VACANCIES ====================
+        function loadVacanciesTab() {
+            document.getElementById('statsVacancies').textContent = allData.jobs.length;
+            document.getElementById('statsApplications').textContent = allData.applications.length;
+
+            const tbody = document.getElementById('vacanciesTable');
+            if (allData.jobs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No vacancies posted yet.</td></tr>';
+            } else {
+                tbody.innerHTML = allData.jobs.map(job => `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;">${job.title}</td>
+                        <td style="padding: 1rem; font-size: 0.85rem;">
+                            ${job.requirements.slice(0, 2).map(r => `<span class="role-tag">${r}</span>`).join(' ')}
+                            ${job.requirements.length > 2 ? `<span class="role-tag">+${job.requirements.length - 2}</span>` : ''}
                         </td>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right; display: flex; gap: 1rem; justify-content: flex-end;">
-                            <button onclick='showMatchDetails(${index})' style="background: none; border: 1px solid var(--primary); color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Details</button>
-                            <a href="${app.cvUrl}" target="_blank" style="background: var(--primary); color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem;"><i data-lucide="file-text" style="width: 14px; height: 14px; vertical-align: middle;"></i> CV</a>
+                        <td style="padding: 1rem; font-size: 0.9rem; color: var(--text-muted);">${new Date(job.datePosted).toLocaleDateString()}</td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <button onclick="deleteJob(${job.id})" style="background: none; border: none; color: var(--error); cursor: pointer; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                            </button>
                         </td>
                     </tr>
                 `).join('');
+                lucide.createIcons();
+            }
+        }
 
-                candCards.innerHTML = data.applications.map((app, index) => `
-                    <div class="glass-card mobile-card">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <div>
-                                <h4 style="margin: 0;">${app.fullName}</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted);">${app.role}</p>
+        // Add Job Form
+        document.getElementById('addJobForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('jobTitle').value;
+            const description = document.getElementById('jobDescription').value;
+            const requirements = document.getElementById('jobRequirements').value;
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('requirements', requirements);
+
+            try {
+                const res = await fetch('/api/admin/jobs', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await res.json();
+                if (result.success) {
+                    e.target.reset();
+                    loadAllData();
+                }
+            } catch (err) {
+                alert('Failed to post job');
+            }
+        });
+
+        async function deleteJob(id) {
+            if (!confirm('Delete this job vacancy?')) return;
+            try {
+                const res = await fetch(`/api/admin/jobs/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadAllData();
+                }
+            } catch (err) {
+                alert('Failed to delete job');
+            }
+        }
+
+        // ==================== TAB 2: CONTRACTORS ====================
+        function loadContractorsTab() {
+            document.getElementById('contractorCount').textContent = `${allData.contractors.length} registered`;
+
+            const tbody = document.getElementById('contractorsTable');
+            if (allData.contractors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No contractors registered.</td></tr>';
+            } else {
+                tbody.innerHTML = allData.contractors.map((c, idx) => `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;">${c.companyName}</td>
+                        <td style="padding: 1rem;">${c.specialty}</td>
+                        <td style="padding: 1rem; font-size: 0.9rem;">
+                            <div>${c.email}</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">${c.phone}</div>
+                        </td>
+                        <td style="padding: 1rem;">${c.experience} years</td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                ${c.certificateUrl ? `<a href="${c.certificateUrl}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Cert</a>` : ''}
+                                ${c.proposalUrl ? `<a href="${c.proposalUrl}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Proposal</a>` : ''}
                             </div>
-                            <span class="${app.matchScore > 70 ? 'match-high' : 'match-med'}">${app.matchScore}%</span>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <button onclick='showMatchDetails(${index})' class="btn btn-secondary" style="flex: 1; padding: 0.6rem; font-size: 0.8rem;">Match Details</button>
-                            <a href="${app.cvUrl}" target="_blank" class="btn btn-primary" style="flex: 1; padding: 0.6rem; font-size: 0.8rem;">View CV</a>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                candList.innerHTML = `<tr><td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No applications yet.</td></tr>`;
-                candCards.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No applications yet.</p>`;
-            }
-
-            // Contractors
-            const contList = document.getElementById('contractorsList');
-            const contCards = document.getElementById('contractorsCardsList');
-            
-            if (data.contractors.length > 0) {
-                contList.innerHTML = data.contractors.map(c => `
-                    <tr>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${c.companyName}</td>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${c.specialty}</td>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">${c.email}</td>
-                        <td style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <span class="role-tag">Pending Review</span>
                         </td>
                     </tr>
                 `).join('');
-
-                contCards.innerHTML = data.contractors.map(c => `
-                    <div class="glass-card mobile-card">
-                        <h4 style="margin-bottom: 0.5rem;">${c.companyName}</h4>
-                        <div style="margin-bottom: 1rem;">
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Specialty: ${c.specialty}</p>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Email: ${c.email}</p>
-                        </div>
-                        <span class="role-tag" style="display: inline-block;">Pending Review</span>
-                    </div>
-                `).join('');
-            } else {
-                contList.innerHTML = `<tr><td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No contractors yet.</td></tr>`;
-                contCards.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No contractors yet.</p>`;
+                lucide.createIcons();
             }
-
-            // Jobs
-            const jobsList = document.getElementById('jobsList');
-            jobsList.innerHTML = data.jobs.map(job => `
-                <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 1rem;">${job.id}</td>
-                    <td style="padding: 1rem;">${job.title}</td>
-                    <td style="padding: 1rem;">${job.category}</td>
-                    <td style="padding: 1rem; text-align: right;">
-                        <button onclick="deleteJob(${job.id})" style="background: none; border: none; color: var(--error); cursor: pointer;" title="Delete">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-            
-            lucide.createIcons();
         }
 
-        function showMatchDetails(index) {
-            const app = window.__adminData.applications[index];
+        // ==================== TAB 3: APPLICATIONS ====================
+        function loadApplicationsTab() {
+            filteredApps = [...allData.applications];
+            renderApplications();
+        }
+
+        function renderApplications() {
+            document.getElementById('appCount').textContent = `${filteredApps.length} applications`;
+
+            const tbody = document.getElementById('applicationsTable');
+            if (filteredApps.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No applications.</td></tr>';
+            } else {
+                tbody.innerHTML = filteredApps.map((app, idx) => `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;">${app.fullName}</td>
+                        <td style="padding: 1rem;">${app.jobTitle}</td>
+                        <td style="padding: 1rem; font-size: 0.9rem; color: var(--text-muted);">${app.location}</td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <span style="background: ${app.matchScore >= 70 ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 193, 7, 0.2)'}; color: ${app.matchScore >= 70 ? 'var(--success)' : 'var(--warning)'}; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">${app.matchScore}%</span>
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <button onclick="showMatchDetails(${idx})" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Details</button>
+                            <a href="${app.cvUrl}" target="_blank" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">CV</a>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            }
+        }
+
+        function showMatchDetails(idx) {
+            const app = filteredApps[idx];
             const modal = document.getElementById('matchModal');
             const content = document.getElementById('matchModalContent');
-            
+
             content.innerHTML = `
-                <div style="margin-bottom: 1.5rem;">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Candidate</p>
-                    <h3 style="margin: 0.2rem 0;">${app.fullName}</h3>
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0 0 0.5rem 0;">${app.fullName}</h3>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Applied for: <strong>${app.jobTitle}</strong></p>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Location: ${app.location} | Expertise: ${app.expertise}</p>
                 </div>
+                
                 <div style="margin-bottom: 1.5rem;">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">AI Summary</p>
-                    <p style="margin: 0.5rem 0; line-height: 1.6;">${app.matchDetails}</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 0.8rem 0;">AI Analysis</p>
+                    <p style="margin: 0; line-height: 1.6;">${app.matchDetails || 'No analysis available'}</p>
                 </div>
-                <div>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem;">Keywords Detected</p>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 0.8rem 0;">Matched Keywords</p>
                     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                        ${app.matchKeywords.map(k => `<span class="role-tag" style="background: var(--primary-glow); color: white; border-color: var(--primary);">${k}</span>`).join('')}
+                        ${(app.matchKeywords || []).map(k => `<span class="role-tag" style="background: var(--primary-glow); border-color: var(--primary);">${k}</span>`).join('')}
                     </div>
                 </div>
-                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white;">${app.matchScore}%</div>
-                    <p>Proprietary matching score based on technical industry requirements in Ghana.</p>
+
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 1.5rem;">
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.5rem; color: white;">${app.matchScore}%</div>
+                    <div>
+                        <p style="margin: 0; font-weight: 600;">AI Match Score</p>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Based on CV analysis and job requirements alignment</p>
+                    </div>
                 </div>
             `;
-            
+
             modal.style.display = 'flex';
             lucide.createIcons();
         }
@@ -385,98 +673,274 @@
             document.getElementById('matchModal').style.display = 'none';
         });
 
-        async function deleteJob(id) {
-            if (!confirm('Are you sure you want to delete this job vacancy?')) return;
-            
-            try {
-                const res = await fetch(`/api/admin/jobs/${id}`, { method: 'DELETE' });
-                const result = await res.json();
-                if (result.success) loadData();
-            } catch (err) {
-                alert('Failed to delete job');
-            }
-        }
-
-        const addJobForm = document.getElementById('addJobForm');
-        addJobForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('jobTitle').value;
-            const category = document.getElementById('jobCategory').value;
-
-            try {
-                const res = await fetch('/api/admin/jobs', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, category })
-                });
-                const result = await res.json();
-                if (result.success) {
-                    addJobForm.reset();
-                    loadData();
-                }
-            } catch (err) {
-                alert('Failed to add job');
+        document.getElementById('matchModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('matchModal')) {
+                document.getElementById('matchModal').style.display = 'none';
             }
         });
 
-        // Tab Switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        // Filter Applications
+        document.getElementById('filterAllApps').addEventListener('click', () => {
+            filteredApps = [...allData.applications];
+            updateFilterButtons(0);
+            renderApplications();
+        });
+
+        document.getElementById('filterHighMatch').addEventListener('click', () => {
+            filteredApps = allData.applications.filter(a => a.matchScore >= 70);
+            updateFilterButtons(1);
+            renderApplications();
+        });
+
+        document.getElementById('filterMedMatch').addEventListener('click', () => {
+            filteredApps = allData.applications.filter(a => a.matchScore >= 40 && a.matchScore < 70);
+            updateFilterButtons(2);
+            renderApplications();
+        });
+
+        function updateFilterButtons(active) {
+            document.querySelectorAll('.filter-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === active);
+            });
+        }
+
+        // ==================== TAB 4: NOTIFICATIONS ====================
+        function loadNotificationsTab() {
+            const notifications = allData.notifications || [];
+            document.getElementById('notificationCount').textContent = `${notifications.length} notifications`;
+
+            const container = document.getElementById('notificationsList');
+            if (notifications.length === 0) {
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No notifications yet.</div>';
+            } else {
+                container.innerHTML = notifications.map(notification => `
+                    <div style="padding: 1.5rem; border-bottom: 1px solid var(--border); ${!notification.read ? 'background: rgba(255,115,0,0.05);' : ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                            <div style="flex: 1;">
+                                <p style="margin: 0; font-weight: 500; ${!notification.read ? 'color: var(--primary);' : ''}">${notification.message}</p>
+                                <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">${new Date(notification.date).toLocaleString()}</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                ${!notification.read ? `<button onclick="markAsRead(${notification.id})" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Mark Read</button>` : ''}
+                                <span class="section-tag" style="font-size: 0.7rem;">${notification.type}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            }
+        }
+
+        async function markAsRead(id) {
+            try {
+                const res = await fetch(`/api/admin/notifications/${id}/read`, { method: 'PUT' });
+                if (res.ok) {
+                    loadAllData();
+                }
+            } catch (err) {
+                console.error('Failed to mark as read:', err);
+            }
+        }
+
+        // ==================== TAB 5: ANALYTICS ====================
+        function loadAnalytics() {
+            const apps = allData.applications;
+            
+            document.getElementById('analyticsApps').textContent = apps.length;
+            document.getElementById('analyticsAppsChange').textContent = `↑ ${Math.max(0, apps.length - 5)} this month`;
+            document.getElementById('analyticsVacancies').textContent = allData.jobs.length;
+            document.getElementById('analyticsContractors').textContent = allData.contractors.length;
+
+            const avgScore = apps.length > 0 ? Math.round(apps.reduce((a, b) => a + b.matchScore, 0) / apps.length) : 0;
+            document.getElementById('analyticsAvgScore').textContent = avgScore + '%';
+
+            const high = apps.filter(a => a.matchScore >= 70).length;
+            const med = apps.filter(a => a.matchScore >= 40 && a.matchScore < 70).length;
+            const low = apps.filter(a => a.matchScore < 40).length;
+
+            document.getElementById('matchHigh').textContent = high;
+            document.getElementById('matchMed').textContent = med;
+            document.getElementById('matchLow').textContent = low;
+        }
+
+        // ==================== TAB 5: TOOLS ====================
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const data = {
+                exportDate: new Date().toISOString(),
+                stats: {
+                    totalApplications: allData.applications.length,
+                    totalVacancies: allData.jobs.length,
+                    totalContractors: allData.contractors.length
+                },
+                applications: allData.applications,
+                jobs: allData.jobs,
+                contractors: allData.contractors
+            };
+
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `solidhands-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('clearDataBtn').addEventListener('click', () => {
+            if (!confirm('⚠️ This will delete ALL applications and contractor data. Are you sure?')) return;
+            if (!confirm('🚨 This action CANNOT be undone. Continue?')) return;
+            
+            // This would need server endpoint - for now just show alert
+            alert('Clear data functionality requires backend implementation');
+        });
+
+        // Bulk Email Form
+        document.getElementById('bulkEmailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const recipientsType = document.getElementById('emailRecipients').value;
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+
+            if (!recipientsType || !subject || !message) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            // Collect recipients based on type
+            let recipients = [];
+            if (recipientsType === 'applicants') {
+                recipients = allData.applications.map(app => app.email);
+            } else if (recipientsType === 'contractors') {
+                recipients = allData.contractors.map(con => con.email);
+            } else if (recipientsType === 'all') {
+                recipients = [
+                    ...allData.applications.map(app => app.email),
+                    ...allData.contractors.map(con => con.email)
+                ];
+            }
+
+            if (recipients.length === 0) {
+                alert('No recipients found for the selected group');
+                return;
+            }
+
+            // Remove duplicates
+            recipients = [...new Set(recipients)];
+
+            try {
+                const res = await fetch('/api/admin/bulk-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipients, subject, message })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    alert(`Bulk email sent successfully to ${result.sent} recipients`);
+                    e.target.reset();
+                } else {
+                    alert('Failed to send bulk email: ' + result.error);
+                }
+            } catch (err) {
+                console.error('Bulk email error:', err);
+                alert('Failed to send bulk email');
+            }
+        });
+
+        // Update system time
+        setInterval(() => {
+            document.getElementById('systemTime').textContent = `Last sync: ${new Date().toLocaleTimeString()}`;
+        }, 1000);
+
+        // ==================== TAB SWITCHING ====================
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
                 
                 btn.classList.add('active');
                 const tabId = 'tab' + btn.dataset.tab.charAt(0).toUpperCase() + btn.dataset.tab.slice(1);
                 document.getElementById(tabId).style.display = 'block';
+                loadAllData(); // Refresh data when switching tabs
             });
         });
+
+        // Initialize
+        checkAuth();
     </script>
 
     <style>
-        .tab-btn {
+        /* Admin Dashboard Styles */
+        .admin-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             color: var(--text-muted);
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
-            transition: var(--transition-base);
+            transition: all 0.3s ease;
         }
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        table th { font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-        .active-link { color: var(--primary) !important; }
 
-        /* Mobile Optimization Styles */
-        .mobile-only-cards { display: none; flex-direction: column; gap: 1rem; }
-        .mobile-card { padding: 1.5rem; margin-bottom: 0; }
-        
-        @media (max-width: 1024px) {
-            #dashboard { padding: 100px 5% 50px !important; }
-            .nav-links { display: none; }
+        .admin-tab-btn:hover {
+            background: rgba(255,115,0,0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .admin-tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .filter-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .admin-tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 768px) {
-            .desktop-only-table { display: none; }
-            .mobile-only-cards { display: flex; }
-            
-            h1 { font-size: 2rem !important; }
-            .section-tag { font-size: 0.7rem; }
-            
-            .tab-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; flex: 1; text-align: center; }
-            div[style*="display: flex; gap: 1rem;"] { width: 100%; overflow-x: auto; padding-bottom: 0.5rem; }
-            
-            #dashboard > div:first-child { flex-direction: column; align-items: flex-start !important; gap: 1.5rem; }
-            #dashboard > div:first-child > div:last-child { width: 100%; justify-content: space-between; }
-            
-            .stats-grid { gap: 1rem !important; }
-            .glass-card h2 { font-size: 1.8rem !important; }
+            main {
+                padding: 1rem 5% !important;
+            }
 
-            #addJobForm { flex-direction: column; align-items: stretch !important; }
+            .admin-tab-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            td, th {
+                padding: 0.75rem !important;
+            }
         }
     </style>
 </body>
