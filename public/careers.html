@@ -48,6 +48,10 @@
     <div class="portal-container">
         <div class="glass-card">
             <h2 style="margin-bottom: 2rem;">Available Positions</h2>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <button id="generalApplyBtn" class="btn btn-secondary" style="padding: 0.85rem 1.4rem; border-radius: 8px; font-weight: 700; margin-bottom: 1rem;">Submit CV for future vacancies</button>
+                <p id="generalInfo" style="color: var(--text-muted); margin: 0;">Apply without an open vacancy and we'll match your CV automatically when a suitable job is posted.</p>
+            </div>
             <div id="jobsList" style="margin-bottom: 2rem;">
                 <!-- Jobs will be loaded here -->
             </div>
@@ -161,7 +165,7 @@
                 const jobsList = document.getElementById('jobsList');
                 
                 if (jobs.length === 0) {
-                    jobsList.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No vacancies available at the moment. Please check back later.</p>';
+                    jobsList.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No vacancies available at the moment. Submit your CV now and we will match you automatically when roles are posted.</p>';
                     return;
                 }
 
@@ -234,6 +238,17 @@
             }
         }
 
+        function openGeneralApplyModal() {
+            document.getElementById('modalTitle').textContent = 'Submit CV for future vacancies';
+            document.getElementById('jobDetails').innerHTML = `
+                <p>There are currently no open vacancies matching your profile. Submit your CV and we will automatically match you when a suitable job is posted.</p>
+                <p style="margin-top: 1rem;"><strong>Tip:</strong> Use the expertise field to tell us your preferred area of work.</p>
+            `;
+            document.getElementById('jobId').value = '0';
+            document.getElementById('applyModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
         // Close modal
         document.getElementById('closeModal').addEventListener('click', () => {
             document.getElementById('applyModal').style.display = 'none';
@@ -244,6 +259,8 @@
             document.getElementById('resultBox').style.display = 'none';
             document.getElementById('applyForm').style.display = 'block';
         });
+
+        document.getElementById('generalApplyBtn').addEventListener('click', openGeneralApplyModal);
 
         // File upload handling
         const dropzone = document.getElementById('dropzone');
@@ -299,23 +316,32 @@
                 if (response.ok) {
                     const result = await response.json();
                     if (result.success) {
-                        // Phase 2: AI Matching Animation
                         aiStatus.textContent = "AI Scanning CV & Matching...";
                         setTimeout(() => {
                             overlay.style.display = 'none';
                             const resultBox = document.getElementById('resultBox');
                             resultBox.style.display = 'block';
-                            resultBox.innerHTML = `
-                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                    <i data-lucide="check-circle" style="color: var(--success);"></i>
-                                    <h3>Application Successful!</h3>
-                                </div>
-                                <p>${result.matchResult.summary}</p>
-                                <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
-                                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white;">${result.matchResult.score}%</div>
-                                    <span>AI Match Score</span>
-                                </div>
-                            `;
+                            if (result.matchResult) {
+                                resultBox.innerHTML = `
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <i data-lucide="check-circle" style="color: var(--success);"></i>
+                                        <h3>Application Successful!</h3>
+                                    </div>
+                                    <p>${result.matchResult.summary}</p>
+                                    <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white;">${result.matchResult.score}%</div>
+                                        <span>AI Match Score</span>
+                                    </div>
+                                `;
+                            } else {
+                                resultBox.innerHTML = `
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <i data-lucide="check-circle" style="color: var(--success);"></i>
+                                        <h3>Submission Received!</h3>
+                                    </div>
+                                    <p>${result.message || 'Your CV has been saved and will be matched automatically to future vacancies.'}</p>
+                                `;
+                            }
                             lucide.createIcons();
                             form.style.display = 'none';
                         }, 2000);

@@ -17,8 +17,9 @@ A comprehensive recruitment platform for job applications and contractor managem
    npm install
    ```
 
-2. Configure email settings (optional but recommended):
-   - Copy `.env` file and update with your email credentials
+2. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Set `EMAIL_USER`, `EMAIL_PASS`, `COMPANY_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_JWT_SECRET`, and `CORS_ORIGIN`
    - For Gmail: Generate an App Password in your Google Account settings
    - Set `EMAIL_USER` and `EMAIL_PASS` in the `.env` file
 
@@ -53,8 +54,58 @@ To enable email notifications and bulk emailing:
 ## Admin Access
 
 - URL: `http://localhost:8080/admin`
-- Password: `solidhands2026`
+- Password: configured via `ADMIN_PASSWORD` in `.env`
 - Features: Job management, application review, notifications, bulk email
+
+## Deployment on Render
+
+### Quick Deploy Steps:
+
+1. **Create a Render account** at [render.com](https://render.com)
+
+2. **Connect your GitHub repository**
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repo
+   - Select the repository
+
+3. **Configure the service:**
+   - Name: `solidhands` (or your preferred name)
+   - Environment: `Node`
+   - Build Command: `npm install`
+   - Start Command: `node server.js`
+   - Plan: Free tier works for small deployments
+
+4. **Set environment variables** in Render dashboard:
+   - Go to "Environment" tab
+   - Add these variables:
+     ```
+     NODE_ENV=production
+     PORT=3000
+     EMAIL_USER=your-email@gmail.com
+     EMAIL_PASS=your-gmail-app-password
+     COMPANY_EMAIL=company-email@example.com
+     ADMIN_PASSWORD=your-secure-password
+     ADMIN_JWT_SECRET=your-secure-jwt-secret
+     CORS_ORIGIN=https://your-render-url.onrender.com
+     ```
+
+5. **Add persistent storage** (optional but recommended):
+   - Go to "Disks" tab
+   - Create a disk:
+     - Name: `uploads-data`
+     - Mount Path: `/uploads`
+     - Size: 1 GB
+
+6. **Deploy:**
+   - Click "Deploy" and wait for the build to complete
+   - Your app will be live at `https://your-service-name.onrender.com`
+
+### Important Notes:
+
+- **Gmail App Password:** You must use an App Password (not your regular password). Get it from https://support.google.com/accounts/answer/185833
+- **Render Free Tier:** Services spin down after 15 minutes of inactivity. For production, upgrade to a paid plan
+- **CORS_ORIGIN:** Set this to your actual Render URL (shown after deployment)
+- **Database:** The app uses a JSON file (db.json) stored on the persistent disk
 
 ## API Endpoints
 

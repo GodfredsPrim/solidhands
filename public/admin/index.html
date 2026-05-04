@@ -61,6 +61,10 @@
                 <i data-lucide="users" style="width: 18px; height: 18px;"></i>
                 <span>Contractors</span>
             </button>
+            <button class="admin-tab-btn" data-tab="candidates">
+                <i data-lucide="user-check" style="width: 18px; height: 18px;"></i>
+                <span>Candidates</span>
+            </button>
             <button class="admin-tab-btn" data-tab="applications">
                 <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
                 <span>Applications</span>
@@ -171,7 +175,35 @@
             </div>
         </section>
 
-        <!-- TAB 3: APPLICATIONS -->
+        <!-- TAB 3: CANDIDATES -->
+        <section id="tabCandidates" class="admin-tab-content" style="display: none;">
+            <div class="glass-card" style="padding: 0; overflow: hidden; margin-bottom: 2rem;">
+                <div style="padding: 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">Pending Candidate Submissions</h3>
+                    <span class="section-tag" id="candidateCount">0 pending</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: rgba(255,115,0,0.05);">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Name</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Expertise</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Location</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid var(--border);">Submitted</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="candidatesTable">
+                            <tr>
+                                <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No pending candidate submissions.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: APPLICATIONS -->
         <section id="tabApplications" class="admin-tab-content" style="display: none;">
             <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
                 <button id="filterAllApps" class="filter-btn active">All Applications</button>
@@ -321,6 +353,7 @@
                                 <option value="">Select Recipients</option>
                                 <option value="applicants">All Applicants</option>
                                 <option value="contractors">All Contractors</option>
+                                <option value="candidates">All Candidates</option>
                                 <option value="all">All Users</option>
                             </select>
                         </div>
@@ -393,13 +426,22 @@
 
         // Check session on page load
         function checkAuth() {
-            const isAuth = sessionStorage.getItem('adminAuth') === 'true';
-            if (isAuth) {
+            const token = sessionStorage.getItem('adminToken');
+            if (token) {
                 showDashboard();
             } else {
                 loginScreen.style.display = 'flex';
                 dashboard.style.display = 'none';
             }
+        }
+
+        function adminFetch(url, options = {}) {
+            const token = sessionStorage.getItem('adminToken');
+            const headers = {
+                ...(options.headers || {}),
+                'Authorization': token ? `Bearer ${token}` : ''
+            };
+            return fetch(url, { ...options, headers });
         }
 
         loginForm.addEventListener('submit', async (e) => {
@@ -414,14 +456,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password })
                 });
+                const result = await res.json();
 
-                if (res.ok) {
-                    sessionStorage.setItem('adminAuth', 'true');
+                if (res.ok && result.token) {
+                    sessionStorage.setItem('adminToken', result.token);
                     loginForm.reset();
                     loginError.style.display = 'none';
                     showDashboard();
                 } else {
-                    loginError.textContent = 'Incorrect master password. Access denied.';
+                    loginError.textContent = result.error || 'Incorrect master password. Access denied.';
                     loginError.style.display = 'block';
                     document.getElementById('password').value = '';
                     loginBtn.disabled = false;
@@ -437,7 +480,7 @@
         });
 
         logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('adminAuth');
+            sessionStorage.removeItem('adminToken');
             loginScreen.style.display = 'flex';
             dashboard.style.display = 'none';
             loginForm.reset();
@@ -468,20 +511,25 @@
         }
 
         // ==================== DATA LOADING ====================
-        let allData = { jobs: [], applications: [], contractors: [], notifications: [] };
+        let allData = { jobs: [], applications: [], contractors: [], notifications: [], candidates: [] };
         let filteredApps = [];
         let notificationInterval = null;
 
         async function loadAllData() {
             try {
-                const res = await fetch('/api/admin/data');
+                const res = await adminFetch('/api/admin/data');
                 if (!res.ok) {
                     console.error('Failed to load data. Status:', res.status);
+                    if (res.status === 401) {
+                        sessionStorage.removeItem('adminToken');
+                        checkAuth();
+                    }
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
                 allData = await res.json();
                 loadVacanciesTab();
                 loadContractorsTab();
+                loadCandidatesTab();
                 loadApplicationsTab();
                 loadNotificationsTab();
                 loadAnalytics();
@@ -495,7 +543,7 @@
             notificationInterval = setInterval(async () => {
                 if (dashboard.style.display === 'none') return;
                 try {
-                    const res = await fetch('/api/admin/data');
+                    const res = await adminFetch('/api/admin/data');
                     if (!res.ok) return;
                     allData = await res.json();
                     loadNotificationsTab();
@@ -546,7 +594,7 @@
             formData.append('requirements', requirements);
 
             try {
-                const res = await fetch('/api/admin/jobs', {
+                const res = await adminFetch('/api/admin/jobs', {
                     method: 'POST',
                     body: formData
                 });
@@ -554,6 +602,8 @@
                 if (result.success) {
                     e.target.reset();
                     loadAllData();
+                } else {
+                    alert(result.error || 'Failed to post job');
                 }
             } catch (err) {
                 alert('Failed to post job');
@@ -563,7 +613,7 @@
         async function deleteJob(id) {
             if (!confirm('Delete this job vacancy?')) return;
             try {
-                const res = await fetch(`/api/admin/jobs/${id}`, { method: 'DELETE' });
+                const res = await adminFetch(`/api/admin/jobs/${id}`, { method: 'DELETE' });
                 if (res.ok) {
                     loadAllData();
                 }
@@ -601,7 +651,114 @@
             }
         }
 
-        // ==================== TAB 3: APPLICATIONS ====================
+        // ==================== TAB 3: CANDIDATES ====================
+        function loadCandidatesTab() {
+            const candidates = allData.candidates || [];
+            document.getElementById('candidateCount').textContent = `${candidates.length} pending`;
+
+            const tbody = document.getElementById('candidatesTable');
+            if (candidates.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No pending candidate submissions.</td></tr>';
+            } else {
+                tbody.innerHTML = candidates.map((candidate, idx) => `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;">${candidate.fullName}</td>
+                        <td style="padding: 1rem;">${candidate.expertise || 'N/A'}</td>
+                        <td style="padding: 1rem;">${candidate.location || 'Unknown'}</td>
+                        <td style="padding: 1rem; font-size: 0.9rem; color: var(--text-muted);">${new Date(candidate.date).toLocaleDateString()}</td>
+                        <td style="padding: 1rem; text-align: center; display: flex; justify-content: center; gap: 0.5rem;">
+                            <button onclick="viewCandidate(${candidate.id})" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">View</button>
+                            <a href="${candidate.cvUrl}" target="_blank" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">CV</a>
+                            <button onclick="deleteCandidate(${candidate.id})" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            }
+        }
+
+        function viewCandidate(candidateId) {
+            const candidate = (allData.candidates || []).find(c => c.id === candidateId);
+            if (!candidate) return;
+            const modal = document.getElementById('matchModal');
+            const content = document.getElementById('matchModalContent');
+
+            const jobOptions = allData.jobs.length > 0
+                ? allData.jobs.map(job => `<option value="${job.id}">${job.title}</option>`).join('')
+                : '<option value="">No jobs available</option>';
+
+            content.innerHTML = `
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                    <h3 style="margin: 0;">${candidate.fullName}</h3>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Email: ${candidate.email}</p>
+                    <p style="margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Phone: ${candidate.phone || 'N/A'} | Location: ${candidate.location || 'N/A'}</p>
+                    <p style="margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Expertise: ${candidate.expertise || 'N/A'}</p>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Pending auto-match to new vacancies.</p>
+                    <p style="margin: 0.8rem 0 0 0; line-height: 1.6; color: var(--text-muted);">Matched jobs: ${candidate.matchedJobs ? candidate.matchedJobs.length : 0}</p>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Convert candidate to application</label>
+                    <select id="convertJobSelect" style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text-main);">
+                        ${jobOptions}
+                    </select>
+                </div>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <button onclick="convertCandidate(${candidate.id})" class="btn btn-primary" style="padding: 0.8rem 1rem;">Convert to Application</button>
+                    <a href="${candidate.cvUrl}" target="_blank" class="btn btn-secondary" style="padding: 0.8rem 1rem;">View CV</a>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        async function convertCandidate(candidateId) {
+            const select = document.getElementById('convertJobSelect');
+            if (!select || !select.value) {
+                alert('Please select a job to convert this candidate into an application.');
+                return;
+            }
+
+            try {
+                const res = await adminFetch(`/api/admin/candidates/${candidateId}/convert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jobId: select.value })
+                });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    alert(`Candidate converted to application for ${result.application.jobTitle}.`);
+                    document.getElementById('matchModal').style.display = 'none';
+                    await loadAllData();
+                } else {
+                    alert(result.error || 'Failed to convert candidate.');
+                }
+            } catch (err) {
+                console.error('Convert candidate failed:', err);
+                alert('Failed to convert candidate. Please try again.');
+            }
+        }
+
+        async function deleteCandidate(candidateId) {
+            if (!confirm('Delete this pending candidate submission?')) return;
+
+            try {
+                const res = await adminFetch(`/api/admin/candidates/${candidateId}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    alert('Candidate deleted successfully.');
+                    await loadAllData();
+                } else {
+                    alert(result.error || 'Failed to delete candidate.');
+                }
+            } catch (err) {
+                console.error('Delete candidate failed:', err);
+                alert('Failed to delete candidate. Please try again.');
+            }
+        }
+
+        // ==================== TAB 4: APPLICATIONS ====================
         function loadApplicationsTab() {
             filteredApps = [...allData.applications];
             renderApplications();
@@ -641,7 +798,7 @@
                 <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
                     <h3 style="margin: 0 0 0.5rem 0;">${app.fullName}</h3>
                     <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Applied for: <strong>${app.jobTitle}</strong></p>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Location: ${app.location} | Expertise: ${app.expertise}</p>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Location: ${app.location || 'N/A'} | Expertise: ${app.expertise || 'N/A'}</p>
                 </div>
                 
                 <div style="margin-bottom: 1.5rem;">
@@ -733,7 +890,7 @@
 
         async function markAsRead(id) {
             try {
-                const res = await fetch(`/api/admin/notifications/${id}/read`, { method: 'PUT' });
+                const res = await adminFetch(`/api/admin/notifications/${id}/read`, { method: 'PUT' });
                 if (res.ok) {
                     loadAllData();
                 }
@@ -770,11 +927,13 @@
                 stats: {
                     totalApplications: allData.applications.length,
                     totalVacancies: allData.jobs.length,
-                    totalContractors: allData.contractors.length
+                    totalContractors: allData.contractors.length,
+                    totalCandidates: (allData.candidates || []).length
                 },
                 applications: allData.applications,
                 jobs: allData.jobs,
-                contractors: allData.contractors
+                contractors: allData.contractors,
+                candidates: allData.candidates || []
             };
 
             const json = JSON.stringify(data, null, 2);
@@ -815,10 +974,13 @@
                 recipients = allData.applications.map(app => app.email);
             } else if (recipientsType === 'contractors') {
                 recipients = allData.contractors.map(con => con.email);
+            } else if (recipientsType === 'candidates') {
+                recipients = (allData.candidates || []).map(c => c.email);
             } else if (recipientsType === 'all') {
                 recipients = [
                     ...allData.applications.map(app => app.email),
-                    ...allData.contractors.map(con => con.email)
+                    ...allData.contractors.map(con => con.email),
+                    ...(allData.candidates || []).map(c => c.email)
                 ];
             }
 
@@ -831,7 +993,7 @@
             recipients = [...new Set(recipients)];
 
             try {
-                const res = await fetch('/api/admin/bulk-email', {
+                const res = await adminFetch('/api/admin/bulk-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ recipients, subject, message })
@@ -841,7 +1003,7 @@
                     alert(`Bulk email sent successfully to ${result.sent} recipients`);
                     e.target.reset();
                 } else {
-                    alert('Failed to send bulk email: ' + result.error);
+                    alert('Failed to send bulk email: ' + (result.error || 'Unknown error'));
                 }
             } catch (err) {
                 console.error('Bulk email error:', err);
